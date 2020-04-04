@@ -8,8 +8,9 @@ RUN pip install -r requirements.txt
 
 RUN django-admin startproject testproject .
 
-COPY django-rest testproject/
+COPY django_rest ./django_rest
 
-COPY tests testproject/
+COPY pytest.ini .
+COPY tests/tests tests
 
 ENTRYPOINT pytest .
