@@ -1,5 +1,9 @@
+coverage
 django==1.*
+enum34
 mock
+pudb
 pytest
+pytest-cov
 pytest-django
 #psycopg2==2.*
