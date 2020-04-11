@@ -41,7 +41,7 @@ class MethodNotAllowed(BaseAPIException):
     RESPONSE_MESSAGE = "HTTP Method not allowed."
 
 
-class UnknownServerError(BaseAPIException):
+class InternalServerError(BaseAPIException):
     pass
 
 

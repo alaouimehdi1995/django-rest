@@ -13,4 +13,4 @@ COPY django_rest ./django_rest
 COPY pytest.ini .
 COPY tests/tests tests
 
-ENTRYPOINT pytest .
+ENTRYPOINT pytest --cov=django_rest tests --show-capture=no

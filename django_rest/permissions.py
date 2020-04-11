@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 class MetaPermissionOperator(type):
     """
     Base Metaclass that allows us to build permission classes dynamically
@@ -55,7 +57,6 @@ class MetaPermissionBinaryOperator(MetaPermissionOperator):
     @classmethod
     def build_permission_from(cls, first_perm_class, second_perm_class):
         # type:(class, class) -> class
-        # TODO: make sure in the operators to concat docstrings
         result_classname = cls.build_classname(first_perm_class, second_perm_class)
         result_class = super(MetaPermissionBinaryOperator, cls).__new__(
             cls, result_classname, (AbstractPermission,), {}
@@ -67,13 +68,7 @@ class MetaPermissionBinaryOperator(MetaPermissionOperator):
             second_result = second_perm_class().has_permission(*args, **kwargs)
             return cls.calculate(first_result, second_result)
 
-        def has_object_permission(self, *args, **kwargs):
-            first_result = first_perm_class().has_object_permission(*args, **kwargs)
-            second_result = second_perm_class().has_object_permission(*args, **kwargs)
-            return cls.calculate(first_result, second_result)
-
         result_class.has_permission = has_permission
-        result_class.has_object_permission = has_object_permission
         return result_class
 
 
@@ -114,12 +109,7 @@ class MetaPermissionUnaryOperator(MetaPermissionOperator):
             result = permission_class().has_permission(*args, **kwargs)
             return cls.calculate(result)
 
-        def has_object_permission(*args, **kwargs):
-            result = permission_class().has_object_permission(*args, **kwargs)
-            return cls.calculate(result)
-
         result_class.has_permission = has_permission
-        result_class.has_object_permission = has_object_permission
         return result_class
 
 
@@ -172,9 +162,6 @@ class AbstractPermission(object):
     def has_permission(self, request, view):
         raise NotImplementedError
 
-    def has_object_permission(self, request, view, obj):
-        raise NotImplementedError
-
 
 class BasePermission(AbstractPermission):
     __metaclass__ = IdentityOperator
@@ -188,9 +175,6 @@ class AllowAny(BasePermission):
     def has_permission(self, request, view):
         return True
 
-    def has_object_permission(self, request, view, obj):
-        return True
-
 
 class IsAuthenticated(BasePermission):
     """
@@ -198,9 +182,6 @@ class IsAuthenticated(BasePermission):
     """
 
     def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated)
-
-    def has_object_permission(self, request, view, obj):
         return bool(request.user and request.user.is_authenticated)
 
 
@@ -212,9 +193,6 @@ class IsStaff(BasePermission):
     def has_permission(self, request, view):
         return bool(request.user and request.user.is_staff)
 
-    def has_object_permission(self, request, view, obj):
-        return bool(request.user and request.user.is_staff)
-
 
 class IsAdmin(BasePermission):
     """
@@ -222,9 +200,6 @@ class IsAdmin(BasePermission):
     """
 
     def has_permission(self, request, view):
-        return bool(request.user and request.user.is_superuser)
-
-    def has_object_permission(self, request, view, obj):
         return bool(request.user and request.user.is_superuser)
 
 
@@ -236,9 +211,6 @@ class IsReadOnly(BasePermission):
     SAFE_HTTP_METHODS = ("GET", "HEAD", "OPTIONS")
 
     def has_permission(self, request, view):
-        return request.method in self.SAFE_HTTP_METHODS
-
-    def has_object_permission(self, request, view, obj):
         return request.method in self.SAFE_HTTP_METHODS
 
 
