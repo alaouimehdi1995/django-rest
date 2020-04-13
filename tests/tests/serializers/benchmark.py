@@ -86,23 +86,19 @@ def test_10_elements():
 
 def test_100_elements():
     i = 100
-    runtest_function(i)
     runtest_function(test_set_length=i)
 
 
 def test_1000_elements():
     i = 1000
-    runtest_function(i)
     runtest_function(test_set_length=i)
 
 
 def test_10000_elements():
     i = 10000
-    runtest_function(i)
     runtest_function(test_set_length=i)
 
 
 def test_50000_elements():
     i = 50000
-    runtest_function(i)
     runtest_function(test_set_length=i)
