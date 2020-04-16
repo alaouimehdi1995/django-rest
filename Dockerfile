@@ -14,3 +14,5 @@ COPY pytest.ini .
 COPY tests/tests tests
 
 ENTRYPOINT pytest --cov=django_rest tests --show-capture=no
+# To run benchmark, uncomment the following line:
+# ENTRYPOINT pytest tests/serializers/benchmark.py
