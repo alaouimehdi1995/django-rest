@@ -119,11 +119,8 @@ class Serializer(six.with_metaclass(SerializerMeta, SerializerBase)):
             except (KeyError, AttributeError, TypeError) as e:
                 if required:
                     raise SerializationError(str(e))
-                else:
-                    continue
-            except SerializationError:
-                raise
-            serialized_value[name] = result
+            else:
+                serialized_value[name] = result
 
         return serialized_value
 
