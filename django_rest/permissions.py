@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import six
+
+
 class MetaPermissionOperator(type):
     """
     Base Metaclass that allows us to build permission classes dynamically
@@ -40,7 +43,9 @@ class MetaPermissionBinaryOperator(MetaPermissionOperator):
     @staticmethod
     def calculate(value1, value2):
         # type:(bool, bool) -> bool
-        raise NotImplementedError
+        raise NotImplementedError(
+            "`calculate()` method should be defined in subclasses"
+        )
 
     @classmethod
     def build_classname(cls, class_1, class_2):
@@ -58,9 +63,7 @@ class MetaPermissionBinaryOperator(MetaPermissionOperator):
     def build_permission_from(cls, first_perm_class, second_perm_class):
         # type:(class, class) -> class
         result_classname = cls.build_classname(first_perm_class, second_perm_class)
-        result_class = super(MetaPermissionBinaryOperator, cls).__new__(
-            cls, result_classname, (AbstractPermission,), {}
-        )
+        result_class = MetaPermissionOperator(result_classname, (BasePermission,), {})
         result_class.__doc__ = cls.build_docstring(first_perm_class, second_perm_class)
 
         def has_permission(self, *args, **kwargs):
@@ -84,7 +87,9 @@ class MetaPermissionUnaryOperator(MetaPermissionOperator):
     @staticmethod
     def calculate(value):
         # type:(bool) -> bool
-        raise NotImplementedError
+        raise NotImplementedError(
+            "`calculate()` method should be defined in subclasses"
+        )
 
     @classmethod
     def build_classname(cls, _class):
@@ -100,9 +105,7 @@ class MetaPermissionUnaryOperator(MetaPermissionOperator):
     def build_permission_from(cls, permission_class):
         # type:(class) -> class
         result_classname = cls.build_classname(permission_class)
-        result_class = super(MetaPermissionUnaryOperator, cls).__new__(
-            cls, result_classname, (AbstractPermission,), {}
-        )
+        result_class = MetaPermissionOperator(result_classname, (BasePermission,), {})
         result_class.__doc__ = cls.build_docstring(permission_class)
 
         def has_permission(*args, **kwargs):
@@ -158,13 +161,11 @@ class IdentityOperator(MetaPermissionUnaryOperator):
         return value
 
 
-class AbstractPermission(object):
+class BasePermission(six.with_metaclass(IdentityOperator, object)):
     def has_permission(self, request, view):
-        raise NotImplementedError
-
-
-class BasePermission(AbstractPermission):
-    __metaclass__ = IdentityOperator
+        raise NotImplementedError(
+            "`has_permission()` method should be defined in subclasses"
+        )
 
 
 class AllowAny(BasePermission):

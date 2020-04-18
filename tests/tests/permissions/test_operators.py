@@ -3,7 +3,7 @@
 from mock import Mock
 
 from django_rest.permissions import (
-    AbstractPermission,
+    BasePermission,
     IsAdmin,
     IsAuthenticated,
     IsReadOnly,
@@ -14,7 +14,7 @@ from django_rest.permissions import (
 def test_binary_operator_on_permissions_should_return_well_formed_permission():
     ResultPermission = IsAuthenticated | IsAdmin
     assert isinstance(ResultPermission, MetaPermissionOperator)
-    assert issubclass(ResultPermission, AbstractPermission)
+    assert issubclass(ResultPermission, BasePermission)
     assert ResultPermission.__name__ == "(IsAuthenticated_OR_IsAdmin)"
     assert ResultPermission.__doc__ == "\t({})\n\t{}\n\t({})".format(
         IsAuthenticated.__doc__, "_OR_", IsAdmin.__doc__
@@ -24,7 +24,7 @@ def test_binary_operator_on_permissions_should_return_well_formed_permission():
 def test_unary_operator_on_permission_should_return_well_formed_permission():
     ResultPermission = ~IsAuthenticated
     assert isinstance(ResultPermission, MetaPermissionOperator)
-    assert issubclass(ResultPermission, AbstractPermission)
+    assert issubclass(ResultPermission, BasePermission)
     assert ResultPermission.__name__ == "(NOT_IsAuthenticated)"
     assert ResultPermission.__doc__ == "\t{}({})".format(
         "NOT_", IsAuthenticated.__doc__
@@ -34,7 +34,7 @@ def test_unary_operator_on_permission_should_return_well_formed_permission():
 def test_combined_operators_on_permissions_should_return_well_formed_permission():
     ComplexPermission = (IsReadOnly & ~IsAuthenticated) | IsAdmin
     assert isinstance(ComplexPermission, MetaPermissionOperator)
-    assert issubclass(ComplexPermission, AbstractPermission)
+    assert issubclass(ComplexPermission, BasePermission)
     assert (
         ComplexPermission.__name__
         == "((IsReadOnly_AND_(NOT_IsAuthenticated))_OR_IsAdmin)"
