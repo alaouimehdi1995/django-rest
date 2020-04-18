@@ -22,11 +22,10 @@ class HTTPMethods(str, Enum):
     CONNECT = "CONNECT"
 
 
-SAFE_METHODS = (HTTPMethods.GET, HTTPMethods.HEAD, HTTPMethods.OPTIONS)
-WRITING_METHODS = (
+ALL_HTTP_METHODS = tuple(attribute.value for attribute in HTTPMethods)
+HTTP_METHODS_SUPPORTING_PAYLOAD = (
     HTTPMethods.POST,
     HTTPMethods.PUT,
     HTTPMethods.PATCH,
-    HTTPMethods.DELETE,
 )
-ALL_METHODS = tuple(attribute.value for attribute in HTTPMethods)
+SAFE_HTTP_METHODS = (HTTPMethods.GET, HTTPMethods.HEAD, HTTPMethods.OPTIONS)
