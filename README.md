@@ -7,7 +7,7 @@ In the root project, run the following commands:
 
 ```
 docker build . -t django-rest:test
-docker container run -t django-rest:test
+docker container run -ti -v "$PWD/.report:/usr/src/app/.report" django-rest:test
 ```
 
 How to run coverage inside the docker container ?
