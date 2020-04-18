@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import six
+
 
 class MetaPermissionOperator(type):
     """
@@ -159,9 +161,7 @@ class IdentityOperator(MetaPermissionUnaryOperator):
         return value
 
 
-class BasePermission(object):
-    __metaclass__ = IdentityOperator
-
+class BasePermission(six.with_metaclass(IdentityOperator, object)):
     def has_permission(self, request, view):
         raise NotImplementedError(
             "`has_permission()` method should be defined in subclasses"
