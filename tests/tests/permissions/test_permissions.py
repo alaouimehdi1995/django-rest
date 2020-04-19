@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from mock import Mock
+import pytest
 
 from django_rest.permissions import (
     AllowAny,
@@ -11,6 +12,24 @@ from django_rest.permissions import (
     IsReadOnly,
     IsStaff,
 )
+
+
+def test_is_admin_or_read_only_permission_should_forbid_access_to_non_admin_POST_request():
+    IsAdminOrReadOnly = IsAdmin | IsReadOnly
+    request = Mock(**{"method": "POST", "user.is_superuser": False})
+    assert IsAdminOrReadOnly().has_permission(request, view=Mock()) is False
+
+
+def test_is_admin_or_read_only_permission_should_grant_access_to_non_admin_GET_request():
+    IsAdminOrReadOnly = IsAdmin | IsReadOnly
+    request = Mock(**{"method": "GET", "user.is_superuser": False})
+    assert IsAdminOrReadOnly().has_permission(request, view=Mock()) is True
+
+
+def test_is_admin_or_read_only_permission_should_grant_access_to_admin_POST_request():
+    IsAdminOrReadOnly = IsAdmin | IsReadOnly
+    request = Mock(**{"method": "POST", "user.is_superuser": True})
+    assert IsAdminOrReadOnly().has_permission(request, view=Mock()) is True
 
 
 def test_allow_any_should_grant_access_to_everyone():
@@ -73,6 +92,14 @@ def test_is_readonly_permission_should_forbid_acesss_on_POST_request():
     assert IsReadOnly().has_permission(request, view=Mock()) is False
 
 
+def test_defining_custom_permission_without_defining_has_permission_method_should_raise_exception():
+    class CustomPermission(BasePermission):
+        pass
+
+    with pytest.raises(NotImplementedError):
+        CustomPermission().has_permission(request=Mock(), view=Mock())
+
+
 def test_defining_custom_permission_should_grant_access_correctly():
     class TokenPermission(BasePermission):
         def has_permission(self, request, view):
@@ -82,3 +109,27 @@ def test_defining_custom_permission_should_grant_access_correctly():
     denied_request = Mock(session={})
     assert TokenPermission().has_permission(allowed_request, view=Mock()) is True
     assert TokenPermission().has_permission(denied_request, view=Mock()) is False
+
+
+def test_AND_operator_on_same_permission_should_be_idempotent():
+    ViewPermission = IsReadOnly & IsReadOnly
+    allowed_request = Mock(method="GET")
+    denied_request = Mock(method="POST")
+    assert ViewPermission().has_permission(
+        allowed_request, view=Mock()
+    ) == IsReadOnly().has_permission(allowed_request, view=Mock())
+    assert ViewPermission().has_permission(
+        denied_request, view=Mock()
+    ) == IsReadOnly().has_permission(denied_request, view=Mock())
+
+
+def test_OR_operator_on_same_permission_should_be_idempotent():
+    ViewPermission = IsReadOnly | IsReadOnly
+    allowed_request = Mock(method="GET")
+    denied_request = Mock(method="POST")
+    assert ViewPermission().has_permission(
+        allowed_request, view=Mock()
+    ) == IsReadOnly().has_permission(allowed_request, view=Mock())
+    assert ViewPermission().has_permission(
+        denied_request, view=Mock()
+    ) == IsReadOnly().has_permission(denied_request, view=Mock())
