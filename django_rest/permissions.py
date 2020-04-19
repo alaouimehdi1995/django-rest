@@ -2,6 +2,8 @@
 
 import six
 
+from django_rest.http.methods import SAFE_HTTP_METHODS
+
 
 class MetaPermissionOperator(type):
     """
@@ -17,19 +19,19 @@ class MetaPermissionOperator(type):
     OPERATOR_NAME = None
 
     def __and__(first_class, second_class):
-        # type:(class, class) -> class
+        # type:(ClassVar, ClassVar) -> ClassVar
         return AND.build_permission_from(first_class, second_class)
 
     def __or__(first_class, second_class):
-        # type:(class, class) -> class
+        # type:(ClassVar, ClassVar) -> ClassVar
         return OR.build_permission_from(first_class, second_class)
 
     def __xor__(first_class, second_class):
-        # type:(class, class) -> class
+        # type:(ClassVar, ClassVar) -> ClassVar
         return XOR.build_permission_from(first_class, second_class)
 
     def __invert__(first_class):
-        # type:(class, class) -> class
+        # type:(ClassVar, ClassVar) -> ClassVar
         return NOT.build_permission_from(first_class)
 
 
@@ -49,26 +51,27 @@ class MetaPermissionBinaryOperator(MetaPermissionOperator):
 
     @classmethod
     def build_classname(cls, class_1, class_2):
-        # type:(class, class) -> str
+        # type:(ClassVar, ClassVar) -> str
         return "({}{}{})".format(class_1.__name__, cls.OPERATOR_NAME, class_2.__name__)
 
     @classmethod
     def build_docstring(cls, class_1, class_2):
-        # type:(class, class) -> str
+        # type:(ClassVar, ClassVar) -> str
         return "\t({})\n\t{}\n\t({})".format(
             class_1.__doc__, cls.OPERATOR_NAME, class_2.__doc__
         )
 
     @classmethod
     def build_permission_from(cls, first_perm_class, second_perm_class):
-        # type:(class, class) -> class
+        # type:(ClassVar, ClassVar) -> ClassVar
         result_classname = cls.build_classname(first_perm_class, second_perm_class)
         result_class = MetaPermissionOperator(result_classname, (BasePermission,), {})
         result_class.__doc__ = cls.build_docstring(first_perm_class, second_perm_class)
 
-        def has_permission(self, *args, **kwargs):
-            first_result = first_perm_class().has_permission(*args, **kwargs)
-            second_result = second_perm_class().has_permission(*args, **kwargs)
+        def has_permission(self, request, view):
+            # type:(HttpRequest, Callable) -> bool
+            first_result = first_perm_class().has_permission(request, view)
+            second_result = second_perm_class().has_permission(request, view)
             return cls.calculate(first_result, second_result)
 
         result_class.has_permission = has_permission
@@ -93,23 +96,24 @@ class MetaPermissionUnaryOperator(MetaPermissionOperator):
 
     @classmethod
     def build_classname(cls, _class):
-        # type:(class) -> str
+        # type:(ClassVar) -> str
         return "({}{})".format(cls.OPERATOR_NAME, _class.__name__)
 
     @classmethod
     def build_docstring(cls, _class):
-        # type:(class, class) -> str
+        # type:(ClassVar, ClassVar) -> str
         return "\t{}({})".format(cls.OPERATOR_NAME, _class.__doc__)
 
     @classmethod
     def build_permission_from(cls, permission_class):
-        # type:(class) -> class
+        # type:(ClassVar) -> ClassVar
         result_classname = cls.build_classname(permission_class)
         result_class = MetaPermissionOperator(result_classname, (BasePermission,), {})
         result_class.__doc__ = cls.build_docstring(permission_class)
 
-        def has_permission(*args, **kwargs):
-            result = permission_class().has_permission(*args, **kwargs)
+        def has_permission(self, request, view):
+            # type:(HttpRequest, Callable) -> bool
+            result = permission_class().has_permission(request, view)
             return cls.calculate(result)
 
         result_class.has_permission = has_permission
@@ -163,6 +167,7 @@ class IdentityOperator(MetaPermissionUnaryOperator):
 
 class BasePermission(six.with_metaclass(IdentityOperator, object)):
     def has_permission(self, request, view):
+        # type:(HttpRequest, Callable) -> bool
         raise NotImplementedError(
             "`has_permission()` method should be defined in subclasses"
         )
@@ -174,6 +179,7 @@ class AllowAny(BasePermission):
     """
 
     def has_permission(self, request, view):
+        # type:(HttpRequest, Callable) -> bool
         return True
 
 
@@ -183,6 +189,7 @@ class IsAuthenticated(BasePermission):
     """
 
     def has_permission(self, request, view):
+        # type:(HttpRequest, Callable) -> bool
         return bool(request.user and request.user.is_authenticated)
 
 
@@ -192,6 +199,7 @@ class IsStaff(BasePermission):
     """
 
     def has_permission(self, request, view):
+        # type:(HttpRequest, Callable) -> bool
         return bool(request.user and request.user.is_staff)
 
 
@@ -201,6 +209,7 @@ class IsAdmin(BasePermission):
     """
 
     def has_permission(self, request, view):
+        # type:(HttpRequest, Callable) -> bool
         return bool(request.user and request.user.is_superuser)
 
 
@@ -209,10 +218,9 @@ class IsReadOnly(BasePermission):
     Allows the view access to read-only http methods: GET, HEAD and OPTIONS.
     """
 
-    SAFE_HTTP_METHODS = ("GET", "HEAD", "OPTIONS")
-
     def has_permission(self, request, view):
-        return request.method in self.SAFE_HTTP_METHODS
+        # type:(HttpRequest, Callable) -> bool
+        return request.method in SAFE_HTTP_METHODS
 
 
 IsAuthenticatedOrReadOnly = IsAuthenticated | IsReadOnly
