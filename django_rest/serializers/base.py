@@ -37,6 +37,7 @@ class Field(object):
         self.required = required
 
     def to_value(self, value):
+        # type:(Any) -> Any
         """Transform the serialized value.
 
         Override this method to clean and validate values serialized by this
@@ -52,6 +53,7 @@ class Field(object):
     to_value._base_implementation = True
 
     def _is_to_value_overridden(self):
+        # type:() -> bool
         to_value = self.to_value
         # If to_value isn't a method, it must have been overridden.
         if not isinstance(to_value, types.MethodType):
@@ -59,6 +61,7 @@ class Field(object):
         return not getattr(to_value, "_base_implementation", False)
 
     def as_getter(self, serializer_field_name, serializer_cls):
+        # type:(str, type) -> Optional[Callable]
         """Returns a function that fetches an attribute from an object.
 
         Return ``None`` to use the default getter for the serializer defined in

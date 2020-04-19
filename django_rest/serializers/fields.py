@@ -50,6 +50,7 @@ class BooleanField(Field):
 
 
 def _check_field_type_for_list_field(field_instance):
+    # type:(Field) -> None
     assert not isinstance(
         field_instance, Serializer
     ), "Cannot call `ListField()` with a Serializer object. An option `many=True` is available for serializers."
@@ -62,6 +63,7 @@ def _check_field_type_for_list_field(field_instance):
 
 
 def ListField(field_instance):
+    # type:(Field) -> Field
     """
     A :function: that allows the serialization of an iterable of values having the same type.
     Could be done with a `MethodField` as well, but it would be too annoying.
@@ -133,6 +135,7 @@ class ConstantField(Field):
         self.constant = constant
 
     def as_getter(self, serializer_field_name, serializer_cls):
+        # type:(str, Serializer) -> Callable
         constant = self.constant
 
         def getter(obj):
@@ -150,6 +153,7 @@ class ConstantField(Field):
 
     @classmethod
     def _is_primitive_const(cls, constant):
+        # type:(Any) -> bool
         if not isinstance(constant, ALLOWED_CONSTANT_TYPES):
             return False
 
@@ -201,6 +205,7 @@ class MethodField(Field):
         self.method_name = method_name
 
     def as_getter(self, serializer_field_name, serializer_cls):
+        # type:(str, Serializer) -> Callable
         method_name = self.method_name
         if method_name is None:
             method_name = "get_{0}".format(serializer_field_name)

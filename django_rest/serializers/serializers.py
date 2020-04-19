@@ -90,14 +90,12 @@ class Serializer(six.with_metaclass(SerializerMeta, SerializerBase)):
     :param instance: The object or objects to serialize.
     :param bool many: If ``instance`` is a collection of objects, set ``many``
         to ``True`` to serialize to a list.
-    :param context: Currently unused parameter for compatability with Django
-        REST Framework serializers.
     """
 
     #: The default getter used if :meth:`Field.as_getter` returns None.
     default_getter = operator.attrgetter
 
-    def __init__(self, instance=None, many=False, context=None, **kwargs):
+    def __init__(self, instance=None, many=False, **kwargs):
         super(Serializer, self).__init__(**kwargs)
         self.instance = instance
         self.many = many
@@ -133,6 +131,7 @@ class Serializer(six.with_metaclass(SerializerMeta, SerializerBase)):
 
     @property
     def data(self):
+        # type:() -> Dict[str, Any]
         """Get the serialized data from the :class:`Serializer`.
 
         The data will be cached for future accesses.
