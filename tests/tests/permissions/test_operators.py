@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 
 from mock import Mock
+import pytest
 
 from django_rest.permissions import (
     BasePermission,
+    IdentityOperator,
     IsAdmin,
     IsAuthenticated,
     IsReadOnly,
+    MetaPermissionBinaryOperator,
+    MetaPermissionUnaryOperator,
     MetaPermissionOperator,
 )
 
@@ -52,43 +56,152 @@ def test_combined_operators_on_permissions_should_return_well_formed_permission(
     )
 
 
-def test_AND_operator_on_same_permission_should_be_idempotent():
-    ViewPermission = IsReadOnly & IsReadOnly
-    allowed_request = Mock(method="GET")
-    denied_request = Mock(method="POST")
-    assert ViewPermission().has_permission(
-        allowed_request, view=Mock()
-    ) == IsReadOnly().has_permission(allowed_request, view=Mock())
-    assert ViewPermission().has_permission(
-        denied_request, view=Mock()
-    ) == IsReadOnly().has_permission(denied_request, view=Mock())
+def test_AND_operator():
+    # Given
+    class A(BasePermission):
+        def has_permission(self, request, view):
+            return True
+
+    class B(BasePermission):
+        def has_permission(self, request, view):
+            return True
+
+    class C(BasePermission):
+        def has_permission(self, request, view):
+            return False
+
+    # When
+    AB = A & B
+    AC = A & C
+
+    # Then
+    assert AB().has_permission(request=Mock(), view=Mock()) is True
+    assert AC().has_permission(request=Mock(), view=Mock()) is False
 
 
-def test_OR_operator_on_same_permission_should_be_idempotent():
-    ViewPermission = IsReadOnly | IsReadOnly
-    allowed_request = Mock(method="GET")
-    denied_request = Mock(method="POST")
-    assert ViewPermission().has_permission(
-        allowed_request, view=Mock()
-    ) == IsReadOnly().has_permission(allowed_request, view=Mock())
-    assert ViewPermission().has_permission(
-        denied_request, view=Mock()
-    ) == IsReadOnly().has_permission(denied_request, view=Mock())
+def test_OR_operator():
+    # Given
+    class A(BasePermission):
+        def has_permission(self, request, view):
+            return True
+
+    class B(BasePermission):
+        def has_permission(self, request, view):
+            return False
+
+    class C(BasePermission):
+        def has_permission(self, request, view):
+            return False
+
+    # When
+    AB = A | B
+    BC = B | C
+
+    # Then
+    assert AB().has_permission(request=Mock(), view=Mock()) is True
+    assert BC().has_permission(request=Mock(), view=Mock()) is False
 
 
-def test_is_admin_or_read_only_permission_should_forbid_access_to_non_admin_POST_request():
-    IsAdminOrReadOnly = IsAdmin | IsReadOnly
-    request = Mock(**{"method": "POST", "user.is_superuser": False})
-    assert IsAdminOrReadOnly().has_permission(request, view=Mock()) is False
+def test_XOR_operator():
+    # Given
+    class A(BasePermission):
+        def has_permission(self, request, view):
+            return True
+
+    class B(BasePermission):
+        def has_permission(self, request, view):
+            return False
+
+    class C(BasePermission):
+        def has_permission(self, request, view):
+            return False
+
+    class D(BasePermission):
+        def has_permission(self, request, view):
+            return True
+
+    # When
+    AB = A ^ B
+    BC = B ^ C
+    AD = A ^ D
+
+    # Then
+    assert AB().has_permission(request=Mock(), view=Mock()) is True
+    assert BC().has_permission(request=Mock(), view=Mock()) is False
+    assert AD().has_permission(request=Mock(), view=Mock()) is False
 
 
-def test_is_admin_or_read_only_permission_should_grant_access_to_non_admin_GET_request():
-    IsAdminOrReadOnly = IsAdmin | IsReadOnly
-    request = Mock(**{"method": "GET", "user.is_superuser": False})
-    assert IsAdminOrReadOnly().has_permission(request, view=Mock()) is True
+def test_NOT_operator():
+    # Given
+    class A(BasePermission):
+        def has_permission(self, request, view):
+            return True
+
+    class B(BasePermission):
+        def has_permission(self, request, view):
+            return False
+
+    # When
+    NotA = ~A
+    NotB = ~B
+
+    # Then
+    assert NotA().has_permission(request=Mock(), view=Mock()) is False
+    assert NotB().has_permission(request=Mock(), view=Mock()) is True
 
 
-def test_is_admin_or_read_only_permission_should_grant_access_to_admin_POST_request():
-    IsAdminOrReadOnly = IsAdmin | IsReadOnly
-    request = Mock(**{"method": "POST", "user.is_superuser": True})
-    assert IsAdminOrReadOnly().has_permission(request, view=Mock()) is True
+def test_IDENTITY_operator():
+    # Given
+    class A(BasePermission):
+        def has_permission(self, request, view):
+            return True
+
+    class B(BasePermission):
+        def has_permission(self, request, view):
+            return False
+
+    # When
+    IdA = IdentityOperator.build_permission_from(A)
+    IdB = IdentityOperator.build_permission_from(B)
+
+    # Then
+    assert IdA().has_permission(request=Mock(), view=Mock()) is True
+    assert IdB().has_permission(request=Mock(), view=Mock()) is False
+
+
+def test_defining_new_binary_operator_without_overriding_calculate_method_should_raise_error():
+    # Given
+    class A(BasePermission):
+        def has_permission(self, request, view):
+            return True
+
+    class B(BasePermission):
+        def has_permission(self, request, view):
+            return True
+
+    class NewOperator(MetaPermissionBinaryOperator):
+        pass
+
+    # When
+    C = NewOperator.build_permission_from(A, B)
+
+    # Then
+    with pytest.raises(NotImplementedError):
+        C().has_permission(request=Mock(), view=Mock())
+
+
+def test_defining_new_unary_operator_without_overriding_calculate_method_should_raise_error():
+    # Given
+    class A(BasePermission):
+        def has_permission(self, request, view):
+            return True
+
+    class NewOperator(MetaPermissionUnaryOperator):
+        pass
+
+    # When
+    C = NewOperator.build_permission_from(A)
+
+    # Then
+    with pytest.raises(NotImplementedError):
+        C().has_permission(request=Mock(), view=Mock())
