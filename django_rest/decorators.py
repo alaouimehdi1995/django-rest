@@ -13,7 +13,7 @@ from django_rest.http.exceptions import (
     MethodNotAllowed,
     PermissionDenied,
 )
-from django_rest.http.methods import ALL_METHODS
+from django_rest.http.methods import ALL_HTTP_METHODS
 from django_rest.permissions import AllowAny
 
 
@@ -61,7 +61,7 @@ def _build_class_wrapper(permission_class, allowed_methods, view_class):
     return ViewWrapper
 
 
-def api_view(permission_class=AllowAny, allowed_methods=ALL_METHODS):
+def api_view(permission_class=AllowAny, allowed_methods=ALL_HTTP_METHODS):
     # type:(AbstractPermission, Tuple[str]) -> Callable
     def view_decorator(view):
         # type:(Callable) -> Callable

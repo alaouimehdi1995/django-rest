@@ -5,15 +5,19 @@ import six
 from django_rest.http.methods import SAFE_HTTP_METHODS
 
 
-class MetaPermissionOperator(type):
-    """
-    Base Metaclass that allows us to build permission classes dynamically
-    using logical operators (AND, OR, ..) with the follwing syntaxes (equivalent):
-    FinalPermClass = (Perm1 | Perm2) & ~Perm3
-    FinalPermClass = (Perm1 or Perm2) and not Perm3
-    The `OPERATOR_NAME` attribute is used to build a name for the resulting class of
-    an unary/binary operation. For example, the resulting class of the example above
-    will be named: `((Perm1_OR_Perm2)_And_(Not_Perm3))`
+class MetaOperand(type):
+    """ Metaclass that allows its instances (permission classes) to use logical
+    using logical operators (AND, OR, ..) with the follwing syntax:
+
+        FinalPermClass = (Perm1 | Perm2) & ~Perm3
+
+    The `OPERATOR_NAME` class attribute is used to build a name for the resulting
+    class of an unary/binary operation. For example:
+
+        FinalPermClass = (Perm1 | Perm2) & ~Perm3
+        FinalPermClass.__class__.__name__
+        # ((Perm1_OR_Perm2)_And_(Not_Perm3))
+
     """
 
     OPERATOR_NAME = None
@@ -35,11 +39,34 @@ class MetaPermissionOperator(type):
         return NOT.build_permission_from(first_class)
 
 
-class MetaPermissionBinaryOperator(MetaPermissionOperator):
-    """
-    Metaclass that implements how the resulting permission class is built as a result
-    of a Binary operators only. This Metaclass is intended to be inherited by operators
+# == Abstract operators
+
+
+class BinaryOperator(object):
+    """ Class that describes how to build a permission class as a result of a
+    Binary operators only. The current class is intended to be inherited by operators
     like: `AND`, `OR`, `XOR`, etc.
+
+    The method called during operations is `build_permission_class()`. It creates
+    a new permission class (i.e. inheriting from `BasePermission`), for which
+    the `has_permission()` method is built using the `calculate()` method on both
+    `has_permission()` results of operand classes.
+
+    A new binary operator can be created by inheriting both the current class, and
+    defining `MetaOperand` as metaclass, then implementing the `calculate()`
+    staticmethod.
+    Example:
+
+        class MyNewBinaryOperator(BinaryOperator, metaclass=MetaOperand):
+            @staticmethod
+            def calculae(value1, value2):
+                # type:(bool, bool) -> bool
+                return fn(value1, value2)
+
+    Then, in order to make the new operator used (without having to always call
+    `MyNewBinaryOperator.build_permission_from(class1, class2)`, it should be
+    subscribed in the `MetaOperand`. For example, in order to use the new operator
+    with the `+`, it should be assigned in the `__add__` method of `MetaOperand`
     """
 
     @staticmethod
@@ -62,27 +89,44 @@ class MetaPermissionBinaryOperator(MetaPermissionOperator):
         )
 
     @classmethod
-    def build_permission_from(cls, first_perm_class, second_perm_class):
+    def build_permission_from(cls, permission_class_1, permission_class_2):
         # type:(ClassVar, ClassVar) -> ClassVar
-        result_classname = cls.build_classname(first_perm_class, second_perm_class)
-        result_class = MetaPermissionOperator(result_classname, (BasePermission,), {})
-        result_class.__doc__ = cls.build_docstring(first_perm_class, second_perm_class)
+        result_classname = cls.build_classname(permission_class_1, permission_class_2)
+        result_class = MetaOperand(result_classname, (BasePermission,), {})
+        result_class.__doc__ = cls.build_docstring(
+            permission_class_1, permission_class_2
+        )
 
         def has_permission(self, request, view):
             # type:(HttpRequest, Callable) -> bool
-            first_result = first_perm_class().has_permission(request, view)
-            second_result = second_perm_class().has_permission(request, view)
+            first_result = permission_class_1().has_permission(request, view)
+            second_result = permission_class_2().has_permission(request, view)
             return cls.calculate(first_result, second_result)
 
         result_class.has_permission = has_permission
         return result_class
 
 
-class MetaPermissionUnaryOperator(MetaPermissionOperator):
-    """
-    Metaclass that implements how the resulting permission class is built as a result
-    of a Unary operators only. This Metaclass is intended to be inherited by operators
-    like `NOT` and `ID` (identity).
+class UnaryOperator(object):
+    """  Class that describes how to build a permission class as a result of a
+    Unary operators only. The current class is intended to be inherited by operators
+    like: `NOT` and Identity operators.
+
+    The method called during operations is `build_permission_class()`. It creates
+    a new permission class (i.e. inheriting from `BasePermission`), for which
+    the `has_permission()` method is built using the `calculate()` method on the
+    `has_permission()` result of operand class.
+
+    A new unary operator can be created by inheriting both the current class, and
+    defining `MetaOperand` as metaclass, then implementing the `calculate()`
+    staticmethod.
+    Example:
+
+        class MyNewUnaryOperator(UnaryOperator, metaclass=MetaOperand):
+            @staticmethod
+            def calculae(value):
+                # type:(bool) -> bool
+                return fn(value)
     """
 
     OPERATOR_NAME = None
@@ -108,7 +152,7 @@ class MetaPermissionUnaryOperator(MetaPermissionOperator):
     def build_permission_from(cls, permission_class):
         # type:(ClassVar) -> ClassVar
         result_classname = cls.build_classname(permission_class)
-        result_class = MetaPermissionOperator(result_classname, (BasePermission,), {})
+        result_class = MetaOperand(result_classname, (BasePermission,), {})
         result_class.__doc__ = cls.build_docstring(permission_class)
 
         def has_permission(self, request, view):
@@ -120,7 +164,19 @@ class MetaPermissionUnaryOperator(MetaPermissionOperator):
         return result_class
 
 
-class AND(MetaPermissionBinaryOperator):
+# == Concrete operators
+
+
+class AND(six.with_metaclass(MetaOperand, BinaryOperator)):
+    """ AND Logical operator class.
+
+    Example of use:
+
+        ResultPermClass = AND.build_permission_from(PermClass1, PermClass2)
+        # Which is also equivalend to:
+        ResultPermClass = PermClass1 & PermClass2
+    """
+
     OPERATOR_NAME = "_AND_"
 
     @staticmethod
@@ -129,7 +185,16 @@ class AND(MetaPermissionBinaryOperator):
         return value1 and value2
 
 
-class OR(MetaPermissionBinaryOperator):
+class OR(six.with_metaclass(MetaOperand, BinaryOperator)):
+    """ OR Logical operator class.
+
+    Example of use:
+
+        ResultPermClass = OR.build_permission_from(PermClass1, PermClass2)
+        # Which is also equivalend to:
+        ResultPermClass = PermClass1 | PermClass2
+    """
+
     OPERATOR_NAME = "_OR_"
 
     @staticmethod
@@ -138,7 +203,16 @@ class OR(MetaPermissionBinaryOperator):
         return value1 or value2
 
 
-class XOR(MetaPermissionBinaryOperator):
+class XOR(six.with_metaclass(MetaOperand, BinaryOperator)):
+    """ XOR (eXclusive OR) Logical operator class.
+
+    Example of use:
+
+        ResultPermClass = XOR.build_permission_from(PermClass1, PermClass2)
+        # Which is also equivalend to:
+        ResultPermClass = PermClass1 ^ PermClass2
+    """
+
     OPERATOR_NAME = "_XOR_"
 
     @staticmethod
@@ -147,7 +221,16 @@ class XOR(MetaPermissionBinaryOperator):
         return value1 ^ value2
 
 
-class NOT(MetaPermissionUnaryOperator):
+class NOT(six.with_metaclass(MetaOperand, UnaryOperator)):
+    """ NOT Logical operator class.
+
+    Example of use:
+
+        ResultPermClass = NOT.build_permission_from(PermClass)
+        # Which is also equivalend to:
+        ResultPermClass = ~PermClass
+    """
+
     OPERATOR_NAME = "NOT_"
 
     @staticmethod
@@ -156,16 +239,19 @@ class NOT(MetaPermissionUnaryOperator):
         return not value
 
 
-class IdentityOperator(MetaPermissionUnaryOperator):
-    OPERATOR_NAME = ""  # The resulting class preserves the same name.
+class BasePermission(six.with_metaclass(MetaOperand, object)):
+    """
+    The Mainclass of all existing permissions. It's created with `MetaOperand`,
+    which allows it to use operators such as: `&`, `|` `^` and `~`.
 
-    @staticmethod
-    def calculate(value):
-        # type:(bool) -> bool
-        return value
+    A new custom permission could be created by inheriting from the current class,
+    and implementing the `has_permission()` method, as shown in the following example:
 
+        class FooBarPermission(BasePermission):
+            def has_permission(self, request, view):
+                return request.user.name in ("foo", "bar")
+    """
 
-class BasePermission(six.with_metaclass(IdentityOperator, object)):
     def has_permission(self, request, view):
         # type:(HttpRequest, Callable) -> bool
         raise NotImplementedError(
@@ -193,7 +279,7 @@ class IsAuthenticated(BasePermission):
         return bool(request.user and request.user.is_authenticated)
 
 
-class IsStaff(BasePermission):
+class IsStaffUser(BasePermission):
     """
     Allows the view access to staff users only.
     """
@@ -203,7 +289,7 @@ class IsStaff(BasePermission):
         return bool(request.user and request.user.is_staff)
 
 
-class IsAdmin(BasePermission):
+class IsAdminUser(BasePermission):
     """
     Allows the view access to admin users only.
     """
