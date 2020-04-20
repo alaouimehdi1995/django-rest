@@ -75,7 +75,7 @@ def test_method_field():
 
     serializer = FakeSerializer()
 
-    assert fields.MethodField.getter_takes_serializer is True
+    assert fields.MethodField.getter_needs_serializer_as_arg is True
 
     fn = fields.MethodField().as_getter("a", serializer)
     assert fn(Mock(a=3)) == 3

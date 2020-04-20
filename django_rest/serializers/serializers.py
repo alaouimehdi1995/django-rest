@@ -26,7 +26,7 @@ def _compile_field_to_tuple(field, serializer_field_name, serializer_cls):
         to_value,
         field.call,
         field.required,
-        field.getter_takes_serializer,
+        field.getter_needs_serializer_as_arg,
     )
 
 
@@ -70,40 +70,39 @@ class SerializerMeta(type):
 
 
 class Serializer(six.with_metaclass(SerializerMeta, SerializerBase)):
-    """:class:`Serializer` is used as a base for custom serializers.
+    """ The Serializer class is used as a base for custom serializers.
 
-    The :class:`Serializer` class is also a subclass of :class:`Field`, and can
-    be used as a :class:`Field` to create nested schemas. A serializer is
-    defined by subclassing :class:`Serializer` and adding each :class:`Field`
-    as a class variable:
+    A Serializer class is also a subclass of Field class, which allows nesting
+    Serializers. A new serializer is defined by subclassing the `Serializer` class,
+    then adding each `Field` as a class variable.
 
-    Example: ::
+    Example: :
 
         class FooSerializer(Serializer):
             foo = Field()
             bar = Field()
 
         foo = Foo(foo='hello', bar=5)
-        FooSerializer(foo).data
-        # {'foo': 'hello', 'bar': 5}
+        serialized_obj = FooSerializer(foo).data
+        # serialized_obj = {'foo': 'hello', 'bar': 5}
 
-    :param instance: The object or objects to serialize.
-    :param bool many: If ``instance`` is a collection of objects, set ``many``
-        to ``True`` to serialize to a list.
-    :param context: Currently unused parameter for compatability with Django
-        REST Framework serializers.
+    :param instance: The object or iterable of objects to serialize.
+    :param bool many: If `instance` is an iterable of objects, set `many` to `True`
+        to serialize it as a list.
     """
 
-    #: The default getter used if :meth:`Field.as_getter` returns None.
+    #: The default getter used if `Field.as_getter()` returns None.
     default_getter = operator.attrgetter
 
-    def __init__(self, instance=None, many=False, context=None, **kwargs):
+    def __init__(self, instance=None, many=False, **kwargs):
         super(Serializer, self).__init__(**kwargs)
         self.instance = instance
         self.many = many
         self._data = None
 
     def _serialize(self, instance, fields):
+        # Transforms the `instance` object into its serialized value, by using
+        # the `fields` list parameter.
         serialized_value = {}
         for name, getter, to_value, call, required, pass_self in fields:
             try:
@@ -119,11 +118,8 @@ class Serializer(six.with_metaclass(SerializerMeta, SerializerBase)):
             except (KeyError, AttributeError, TypeError) as e:
                 if required:
                     raise SerializationError(str(e))
-                else:
-                    continue
-            except SerializationError:
-                raise
-            serialized_value[name] = result
+            else:
+                serialized_value[name] = result
 
         return serialized_value
 
@@ -136,22 +132,21 @@ class Serializer(six.with_metaclass(SerializerMeta, SerializerBase)):
 
     @property
     def data(self):
-        """Get the serialized data from the :class:`Serializer`.
-
-        The data will be cached for future accesses.
+        # type:() -> Dict[str, Any]
+        """ Get the serialized data from the Serializer instance. The data is cached
+        for further accesses.
         """
-        # Cache the data for next time .data is called.
+        # Cache the data for next time `.data` is called.
         if self._data is None:
             self._data = self.to_value(self.instance)
         return self._data
 
 
 class DictSerializer(Serializer):
-    """:class:`DictSerializer` serializes python ``dicts`` instead of objects.
+    """ DictSerializer serializes python `dicts` instead of objects.
 
-    Instead of the serializer's fields fetching data using
-    ``operator.attrgetter``, :class:`DictSerializer` uses
-    ``operator.itemgetter``.
+    `DictSerializer` uses `operator.itemgetter` to fetch data from the object
+    to serialize, while `Serializer` class uses `operator.attrgetter`.
 
     Example: ::
 
@@ -160,8 +155,8 @@ class DictSerializer(Serializer):
             bar = FloatField()
 
         foo = {'foo': '5', 'bar': '2.2'}
-        FooSerializer(foo).data
-        # {'foo': 5, 'bar': 2.2}
+        serialized_obj = FooSerializer(foo).data
+        # serialized_obj = {'foo': 5, 'bar': 2.2}
     """
 
     default_getter = operator.itemgetter
