@@ -2,22 +2,22 @@
 
 from mock import Mock
 import pytest
+import six
 
 from django_rest.permissions import (
     BasePermission,
-    IdentityOperator,
+    BinaryOperator,
     IsAdmin,
     IsAuthenticated,
     IsReadOnly,
-    MetaPermissionBinaryOperator,
-    MetaPermissionUnaryOperator,
-    MetaPermissionOperator,
+    MetaOperand,
+    UnaryOperator,
 )
 
 
 def test_binary_operator_on_permissions_should_return_well_formed_permission():
     ResultPermission = IsAuthenticated | IsAdmin
-    assert isinstance(ResultPermission, MetaPermissionOperator)
+    assert isinstance(ResultPermission, MetaOperand)
     assert issubclass(ResultPermission, BasePermission)
     assert ResultPermission.__name__ == "(IsAuthenticated_OR_IsAdmin)"
     assert ResultPermission.__doc__ == "\t({})\n\t{}\n\t({})".format(
@@ -27,7 +27,7 @@ def test_binary_operator_on_permissions_should_return_well_formed_permission():
 
 def test_unary_operator_on_permission_should_return_well_formed_permission():
     ResultPermission = ~IsAuthenticated
-    assert isinstance(ResultPermission, MetaPermissionOperator)
+    assert isinstance(ResultPermission, MetaOperand)
     assert issubclass(ResultPermission, BasePermission)
     assert ResultPermission.__name__ == "(NOT_IsAuthenticated)"
     assert ResultPermission.__doc__ == "\t{}({})".format(
@@ -37,7 +37,7 @@ def test_unary_operator_on_permission_should_return_well_formed_permission():
 
 def test_combined_operators_on_permissions_should_return_well_formed_permission():
     ComplexPermission = (IsReadOnly & ~IsAuthenticated) | IsAdmin
-    assert isinstance(ComplexPermission, MetaPermissionOperator)
+    assert isinstance(ComplexPermission, MetaOperand)
     assert issubclass(ComplexPermission, BasePermission)
     assert (
         ComplexPermission.__name__
@@ -150,25 +150,6 @@ def test_NOT_operator():
     assert NotB().has_permission(request=Mock(), view=Mock()) is True
 
 
-def test_IDENTITY_operator():
-    # Given
-    class A(BasePermission):
-        def has_permission(self, request, view):
-            return True
-
-    class B(BasePermission):
-        def has_permission(self, request, view):
-            return False
-
-    # When
-    IdA = IdentityOperator.build_permission_from(A)
-    IdB = IdentityOperator.build_permission_from(B)
-
-    # Then
-    assert IdA().has_permission(request=Mock(), view=Mock()) is True
-    assert IdB().has_permission(request=Mock(), view=Mock()) is False
-
-
 def test_defining_new_binary_operator_without_overriding_calculate_method_should_raise_error():
     # Given
     class A(BasePermission):
@@ -179,7 +160,7 @@ def test_defining_new_binary_operator_without_overriding_calculate_method_should
         def has_permission(self, request, view):
             return True
 
-    class NewOperator(MetaPermissionBinaryOperator):
+    class NewOperator(six.with_metaclass(MetaOperand, BinaryOperator)):
         pass
 
     # When
@@ -196,7 +177,7 @@ def test_defining_new_unary_operator_without_overriding_calculate_method_should_
         def has_permission(self, request, view):
             return True
 
-    class NewOperator(MetaPermissionUnaryOperator):
+    class NewOperator(six.with_metaclass(MetaOperand, UnaryOperator)):
         pass
 
     # When
