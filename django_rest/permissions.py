@@ -279,7 +279,7 @@ class IsAuthenticated(BasePermission):
         return bool(request.user and request.user.is_authenticated)
 
 
-class IsStaff(BasePermission):
+class IsStaffUser(BasePermission):
     """
     Allows the view access to staff users only.
     """
@@ -289,7 +289,7 @@ class IsStaff(BasePermission):
         return bool(request.user and request.user.is_staff)
 
 
-class IsAdmin(BasePermission):
+class IsAdminUser(BasePermission):
     """
     Allows the view access to admin users only.
     """

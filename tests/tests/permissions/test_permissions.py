@@ -6,30 +6,30 @@ import pytest
 from django_rest.permissions import (
     AllowAny,
     BasePermission,
-    IsAdmin,
+    IsAdminUser,
     IsAuthenticated,
     IsAuthenticatedOrReadOnly,
     IsReadOnly,
-    IsStaff,
+    IsStaffUser,
 )
 
 
 def test_is_admin_or_read_only_permission_should_forbid_access_to_non_admin_POST_request():
-    IsAdminOrReadOnly = IsAdmin | IsReadOnly
+    IsAdminUserOrReadOnly = IsAdminUser | IsReadOnly
     request = Mock(**{"method": "POST", "user.is_superuser": False})
-    assert IsAdminOrReadOnly().has_permission(request, view=Mock()) is False
+    assert IsAdminUserOrReadOnly().has_permission(request, view=Mock()) is False
 
 
 def test_is_admin_or_read_only_permission_should_grant_access_to_non_admin_GET_request():
-    IsAdminOrReadOnly = IsAdmin | IsReadOnly
+    IsAdminUserOrReadOnly = IsAdminUser | IsReadOnly
     request = Mock(**{"method": "GET", "user.is_superuser": False})
-    assert IsAdminOrReadOnly().has_permission(request, view=Mock()) is True
+    assert IsAdminUserOrReadOnly().has_permission(request, view=Mock()) is True
 
 
 def test_is_admin_or_read_only_permission_should_grant_access_to_admin_POST_request():
-    IsAdminOrReadOnly = IsAdmin | IsReadOnly
+    IsAdminUserOrReadOnly = IsAdminUser | IsReadOnly
     request = Mock(**{"method": "POST", "user.is_superuser": True})
-    assert IsAdminOrReadOnly().has_permission(request, view=Mock()) is True
+    assert IsAdminUserOrReadOnly().has_permission(request, view=Mock()) is True
 
 
 def test_allow_any_should_grant_access_to_everyone():
@@ -39,22 +39,22 @@ def test_allow_any_should_grant_access_to_everyone():
 
 def test_is_admin_permission_should_grant_access_to_admin():
     request = Mock(**{"user.is_superuser": True})
-    assert IsAdmin().has_permission(request, view=Mock()) is True
+    assert IsAdminUser().has_permission(request, view=Mock()) is True
 
 
 def test_is_admin_permission_should_forbid_access_to_simple_user():
     request = Mock(**{"user.is_superuser": False})
-    assert IsAdmin().has_permission(request, view=Mock()) is False
+    assert IsAdminUser().has_permission(request, view=Mock()) is False
 
 
 def test_is_staff_permission_should_grant_access_to_staff():
     request = Mock(**{"user.is_staff": True})
-    assert IsStaff().has_permission(request, view=Mock()) is True
+    assert IsStaffUser().has_permission(request, view=Mock()) is True
 
 
 def test_is_staff_permission_should_forbid_access_to_simple_user():
     request = Mock(**{"user.is_staff": False})
-    assert IsStaff().has_permission(request, view=Mock()) is False
+    assert IsStaffUser().has_permission(request, view=Mock()) is False
 
 
 def test_is_authenticated_should_grant_access_to_authenticated_user():

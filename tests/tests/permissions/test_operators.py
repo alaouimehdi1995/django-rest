@@ -7,7 +7,7 @@ import six
 from django_rest.permissions import (
     BasePermission,
     BinaryOperator,
-    IsAdmin,
+    IsAdminUser,
     IsAuthenticated,
     IsReadOnly,
     MetaOperand,
@@ -16,12 +16,12 @@ from django_rest.permissions import (
 
 
 def test_binary_operator_on_permissions_should_return_well_formed_permission():
-    ResultPermission = IsAuthenticated | IsAdmin
+    ResultPermission = IsAuthenticated | IsAdminUser
     assert isinstance(ResultPermission, MetaOperand)
     assert issubclass(ResultPermission, BasePermission)
-    assert ResultPermission.__name__ == "(IsAuthenticated_OR_IsAdmin)"
+    assert ResultPermission.__name__ == "(IsAuthenticated_OR_IsAdminUser)"
     assert ResultPermission.__doc__ == "\t({})\n\t{}\n\t({})".format(
-        IsAuthenticated.__doc__, "_OR_", IsAdmin.__doc__
+        IsAuthenticated.__doc__, "_OR_", IsAdminUser.__doc__
     )
 
 
@@ -36,12 +36,12 @@ def test_unary_operator_on_permission_should_return_well_formed_permission():
 
 
 def test_combined_operators_on_permissions_should_return_well_formed_permission():
-    ComplexPermission = (IsReadOnly & ~IsAuthenticated) | IsAdmin
+    ComplexPermission = (IsReadOnly & ~IsAuthenticated) | IsAdminUser
     assert isinstance(ComplexPermission, MetaOperand)
     assert issubclass(ComplexPermission, BasePermission)
     assert (
         ComplexPermission.__name__
-        == "((IsReadOnly_AND_(NOT_IsAuthenticated))_OR_IsAdmin)"
+        == "((IsReadOnly_AND_(NOT_IsAuthenticated))_OR_IsAdminUser)"
     )
     assert (
         ComplexPermission.__doc__
@@ -51,7 +51,7 @@ def test_combined_operators_on_permissions_should_return_well_formed_permission(
             "NOT_",
             IsAuthenticated.__doc__,
             "_OR_",
-            IsAdmin.__doc__,
+            IsAdminUser.__doc__,
         )
     )
 
