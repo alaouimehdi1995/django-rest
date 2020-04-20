@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from collections import Iterable, Mapping
 import six
 import types
 
@@ -8,13 +7,23 @@ from django_rest.serializers import Serializer
 from django_rest.serializers.base import Field
 from django_rest.serializers.exceptions import SerializationError
 
+if six.PY34:
+    from collections.abc import Iterable, Mapping  # pragma: no cover
+else:
+    from collections import Iterable, Mapping  # pragma: no cover
+
+
+NoneType = type(None)
+UnicodeType = types.UnicodeType if six.PY2 else str
+
+
 PRIMITIVE_TYPES = (
-    types.BooleanType,
-    types.IntType,
-    types.FloatType,
-    types.NoneType,
-    types.StringType,
-    types.UnicodeType,
+    bool,
+    int,
+    float,
+    str,
+    NoneType,
+    UnicodeType,
 )
 ITERABLE_TYPES = (
     Iterable,
@@ -162,8 +171,7 @@ class ConstantField(Field):
 
         if isinstance(constant, Mapping):
             keys_are_primitive = all(
-                isinstance(key, (types.StringType, types.UnicodeType))
-                for key in constant.keys()
+                isinstance(key, (str, UnicodeType)) for key in constant.keys()
             )
             return keys_are_primitive and all(
                 cls._is_primitive_const(value) for value in constant.values()
