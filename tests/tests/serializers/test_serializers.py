@@ -409,7 +409,7 @@ def test_optional_constant_field_with_non_primitive_constant_should_ignore_the_v
 
     class ASerializer(DictSerializer):
         users = fields.ConstantField(
-            {"foo": user_1, "bar": user_2,}, label="usersList", required=False
+            {"foo": user_1, "bar": user_2}, label="usersList", required=False
         )
 
     # When

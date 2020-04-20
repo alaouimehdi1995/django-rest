@@ -33,19 +33,19 @@ ALLOWED_CONSTANT_TYPES = ITERABLE_TYPES + PRIMITIVE_TYPES
 
 
 class CharField(Field):
-    """A :class:`Field` that converts the value to a string."""
+    """ Field that converts the attribute's value into a string. """
 
     to_value = staticmethod(six.text_type)
 
 
 class IntegerField(Field):
-    """A :class:`Field` that converts the value to an integer."""
+    """ Field that converts the attribute's value into an integer. """
 
     to_value = staticmethod(int)
 
 
 class FloatField(Field):
-    """A :class:`Field` that converts the value to a float."""
+    """ Field that converts the attribute's value into a float. """
 
     # TODO: implement precision
 
@@ -53,12 +53,12 @@ class FloatField(Field):
 
 
 class BooleanField(Field):
-    """A :class:`Field` that converts the value to a boolean."""
+    """ Field that converts the attribute's value into a boolean. """
 
     to_value = staticmethod(bool)
 
 
-def _check_field_type_for_list_field(field_instance):
+def _is_valid_field_instance(field_instance):
     # type:(Field) -> None
     assert not isinstance(
         field_instance, Serializer
@@ -73,25 +73,28 @@ def _check_field_type_for_list_field(field_instance):
 
 def ListField(field_instance):
     # type:(Field) -> Field
-    """
-    A :function: that allows the serialization of an iterable of values having the same type.
-    Could be done with a `MethodField` as well, but it would be too annoying.
+    """ Allows to apply the Field.to_value() method on an iterable of values,
+    instead of a single value. The same purpose could be achieved with `MethodField()`,
+    but it'll be just too annoying.
     Example:
-    class Subscription:
-        status = ("active", "trialing", "canceled")  # Works with instance attributes as well
 
-    class SubscriptionSerializer(Serializer):
-        status = ListField(CharField(label="allowed_status", required=True))
-        # Probably other fields here
+        class Subscription:
+            status = ("active", "trialing", "canceled")
 
-    SubscriptionSerializer(subscription).data
-    # {"allowed_status": ["active", "trialing", "canceled"]}
+        class SubscriptionSerializer(Serializer):
+            status = ListField(CharField(label="allowed_status", required=True))
 
-    :param field: a `Field` instance that represents the type of a single element
-        the attribute to serialize. The `Field` cannot be a `Serializer` (for that,
-        you have the option `many=True`), or a`MethodField`, or even a `ConstantField`
+        serialized_obj = SubscriptionSerializer(subscription).data
+        # serialized_obj = {"allowed_status": ["active", "trialing", "canceled"]}
+
+    :param field_instance: a Field instance that represents the type of a single element
+        of the iterable to be passed to `to_value()` method.
+        Note that the `field_instance` cannot be a `MethodField()`, a `ConstantField()`
+        or a `Serializer` (which has the option `many=True` for the same purpose).
+    The `ListField` generates a new field class (and instance) during the declaration
+    (before the runtime), for perfomance purpose.
     """
-    _check_field_type_for_list_field(field_instance)
+    _is_valid_field_instance(field_instance)
     field_class = field_instance.__class__
     ListFieldClass = type(
         "List{}".format(field_class.__name__),
@@ -109,8 +112,9 @@ def ListField(field_instance):
 
 class ConstantField(Field):
     """
-    A :class:`Field` that allows to inject constant data into the serialized object,
-    without having to touch the original object, or use `MethodField` to return a constant.
+    A Field that allows to constant data injection into the serialized object, without
+    the need to declare an (serialized) object method, or a serializer's `MethodField()`
+    to return a constant.
     For example:
 
         foo_const = "Foo"
@@ -118,12 +122,15 @@ class ConstantField(Field):
             foo = ConstantField(label="foo_constant", required=False, constant=foo_const)
             bar = IntegerField()
         foo = Foo(bar=5)
-        FooSerializer(foo).data
-        # {'foo': "Foo", 'bar': 5}
+        serialized_foo = FooSerializer(foo).data
+        # serialized_foo = {'foo': "Foo", 'bar': 5}
 
 
-    :param constant: The constant to add in the serialized object. Should be primitive
-        (int, float, str, bool, None), list of primitives, or a dict (even nested) of primitives.
+    :param str label: Same as other fields.
+    :param bool required: Same as other fields.
+    :param constant: The constant to be added in the serialized object. Should be
+        a combination (`list`, `dict` or single value) of primitive type (int, float,
+        str, bool, None).
     """
 
     __slots__ = ("label", "required", "constant", "_is_primitive")
@@ -182,10 +189,10 @@ class ConstantField(Field):
 
 
 class MethodField(Field):
-    """A :class:`Field` that calls a method on the :class:`Serializer`.
+    """ A Field class that calls a method on the `Serializer` class.
 
-    This is useful if a :class:`Field` needs to serialize a value that may come
-    from multiple attributes on an object. For example: ::
+    This is useful if a Field needs to serialize a value that may come from multiple
+    attributes on the same object. For example:
 
         class FooSerializer(Serializer):
             plus = MethodField()
@@ -198,15 +205,15 @@ class MethodField(Field):
                 return foo_obj.bar - foo_obj.baz
 
         foo = Foo(bar=5, baz=10)
-        FooSerializer(foo).data
-        # {'plus': 15, 'minus': -5}
+        serialized_obj = FooSerializer(foo).data
+        # serialized_obj = {'plus': 15, 'minus': -5}
 
-    :param str method_name: The method on the serializer to call. Defaults to
-        ``'get_<field name>'``.
+    :param str method_name: The serializer's method name to be called. Defaults to
+        `get_<field name>`.
     """
 
     __slots__ = ("label", "required", "method_name")
-    getter_takes_serializer = True
+    getter_needs_serializer_as_arg = True
 
     def __init__(self, method_name=None, **kwargs):
         super(MethodField, self).__init__(**kwargs)
