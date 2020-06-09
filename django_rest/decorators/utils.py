@@ -10,7 +10,7 @@ from django.views import View
 
 from django_rest.deserializers import (
     Deserializer,
-    PerforatedDeserializer,
+    AllPassDeserializer,
 )
 from django_rest.http.exceptions import (
     BadRequest,
@@ -38,7 +38,7 @@ def build_deserializer_map(deserializer_class):
                 "should be subclass of `Deserializer`."
             )
         return {
-            http_method: deserializer_class.get(http_method, PerforatedDeserializer)
+            http_method: deserializer_class.get(http_method, AllPassDeserializer)
             for http_method in HTTP_METHODS_SUPPORTING_PAYLOAD
         }
     if issubclass(deserializer_class, Deserializer):
