@@ -17,7 +17,7 @@ from django_rest.decorators.utils import (
     extract_request_payload,
     transform_query_dict_into_regular_dict,
 )
-from django_rest.deserializers import Deserializer, PerforatedDeserializer
+from django_rest.deserializers import Deserializer, AllPassDeserializer
 from django_rest.http.exceptions import (
     BaseAPIException,
     InternalServerError,
@@ -104,8 +104,8 @@ def test_deserializer_map_with_incomplete_dict():
     # Then
     assert deserializer_map == {
         "POST": CustomDeserializer,
-        "PUT": PerforatedDeserializer,
-        "PATCH": PerforatedDeserializer,
+        "PUT": AllPassDeserializer,
+        "PATCH": AllPassDeserializer,
     }
 
 
@@ -126,7 +126,7 @@ def test_deserializer_map_with_dict_having_invalid_value():
         pass
 
     deserializer_init_map = {
-        "POST": PerforatedDeserializer,
+        "POST": AllPassDeserializer,
         "PUT": InvalidDeserializer,
     }
 
@@ -269,7 +269,7 @@ def test_function_wrapper_calls_the_target_view_when_the_post_request_is_correct
         content_type="application/json",
     )
     target_view = _mock_view()
-    deserializer_map = {"POST": PerforatedDeserializer}
+    deserializer_map = {"POST": AllPassDeserializer}
     allow_forms = False
 
     # When
@@ -337,7 +337,10 @@ def test_function_wrapper_should_return_500_when_unkown_exception_is_raised_in_t
 
     # Then
     assert resp.status_code == 500
-    assert json.loads(resp.content.decode())["error_msg"] == InternalServerError.RESPONSE_MESSAGE
+    assert (
+        json.loads(resp.content.decode())["error_msg"]
+        == InternalServerError.RESPONSE_MESSAGE
+    )
     target_view.assert_called_once_with(
         request, url_params={}, query_params={}, deserialized_data=None
     )

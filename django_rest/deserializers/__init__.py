@@ -2,4 +2,4 @@
 
 from django.forms import fields
 
-from django_rest.deserializers.base import Deserializer, PerforatedDeserializer
+from django_rest.deserializers.base import Deserializer, AllPassDeserializer

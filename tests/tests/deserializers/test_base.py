@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django_rest.deserializers import fields, Deserializer, PerforatedDeserializer
+from django_rest.deserializers import fields, Deserializer, AllPassDeserializer
 
 
 def test_fields_method_should_iterate_over_form_fields():
@@ -14,8 +14,8 @@ def test_fields_method_should_iterate_over_form_fields():
 
     # Then
     assert deserializer_fields == [
-        ("foo", SimpleDeserializer.declared_fields['foo']),
-        ("bar", SimpleDeserializer.declared_fields['bar']),
+        ("foo", SimpleDeserializer.declared_fields["foo"]),
+        ("bar", SimpleDeserializer.declared_fields["bar"]),
     ]
 
 
@@ -420,14 +420,14 @@ def test_nested_deserializer_non_required_valid_nested_non_required_non_existent
 
 
 def test_validate_any_deserializer_should_validate_any_kind_of_data():
-    deserializer = PerforatedDeserializer(data={})
+    deserializer = AllPassDeserializer(data={})
     assert deserializer.is_valid()
     assert deserializer.data == {}
 
-    deserializer = PerforatedDeserializer(data={"foo": "bar"})
+    deserializer = AllPassDeserializer(data={"foo": "bar"})
     assert deserializer.is_valid()
     assert deserializer.data == {"foo": "bar"}
 
-    deserializer = PerforatedDeserializer(data={"foo": {"bar": "baz", "baz": 3}})
+    deserializer = AllPassDeserializer(data={"foo": {"bar": "baz", "baz": 3}})
     assert deserializer.is_valid()
     assert deserializer.data == {"foo": {"bar": "baz", "baz": 3}}
