@@ -21,7 +21,7 @@ from django_rest.deserializers import Deserializer, AllPassDeserializer
 from django_rest.http.exceptions import (
     BaseAPIException,
     InternalServerError,
-    PermissionDenied,
+    UnsupportedMediaType,
 )
 from django_rest.permissions import AllowAny, BasePermission
 
@@ -169,7 +169,7 @@ def test_extract_payload_from_post_method_form():
         "foo": "bar",
         "baz": "3",
     }
-    with pytest.raises(PermissionDenied):
+    with pytest.raises(UnsupportedMediaType):
         extract_request_payload(request, allow_form_data=False)
 
 

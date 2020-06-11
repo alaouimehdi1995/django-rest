@@ -19,6 +19,7 @@ from django_rest.http.exceptions import (
     InternalServerError,
     MethodNotAllowed,
     PermissionDenied,
+    UnsupportedMediaType,
 )
 from django_rest.http.methods import SUPPORTING_PAYLOAD_METHODS
 from django_rest.permissions import BasePermission
@@ -69,7 +70,7 @@ def extract_request_payload(request, allow_form_data=False):
     For `POST`, `PUT` and `PATCH` requests:
     - If the form data is allowed and the request is a form, returns a `dict`
     - If the form data isn't allowed and the request is a form, raises
-      PermissionDenied exception.
+      UnsupportedMediaType exception.
     - For application/json requests, returns a `dict` containing the request's
       data
     For other HTTP methods:
@@ -77,7 +78,7 @@ def extract_request_payload(request, allow_form_data=False):
     """
     method = request.method
     if not allow_form_data and request.content_type in FORMS_CONTENT_TYPES:
-        raise PermissionDenied  # OR bad request ?
+        raise UnsupportedMediaType
     elif request.content_type in FORMS_CONTENT_TYPES and request.method == "POST":
         return transform_query_dict_into_regular_dict(request.POST)
 
