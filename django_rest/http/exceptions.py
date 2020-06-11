@@ -41,6 +41,11 @@ class MethodNotAllowed(BaseAPIException):
     RESPONSE_MESSAGE = "HTTP Method not allowed."
 
 
+class UnsupportedMediaType(BaseAPIException):
+    STATUS_CODE = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
+    RESPONSE_MESSAGE = "Unsupported Media Type. Check your request's Content-Type."
+
+
 class InternalServerError(BaseAPIException):
     pass
 
