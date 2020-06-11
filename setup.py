@@ -15,7 +15,7 @@ setup(
     long_description_content_type="text/markdown",
     author="Mehdi Alaoui",
     author_email="alaoui.mehdi.1995@gmail.com",
-    packages=find_packages(include=["django_rest"]),
+    packages=find_packages(include=["django_rest*"]),
     install_requires=["django>=1.11", "six"],
     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, <4",
     classifiers=[
