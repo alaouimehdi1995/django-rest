@@ -2,7 +2,7 @@
 
 import six
 
-from django_rest.http.methods import SAFE_HTTP_METHODS
+from django_rest.http.methods import SAFE_METHODS
 
 
 class MetaOperand(type):
@@ -306,7 +306,7 @@ class IsReadOnly(BasePermission):
 
     def has_permission(self, request, view):
         # type:(HttpRequest, Callable) -> bool
-        return request.method in SAFE_HTTP_METHODS
+        return request.method in SAFE_METHODS
 
 
 IsAuthenticatedOrReadOnly = IsAuthenticated | IsReadOnly
