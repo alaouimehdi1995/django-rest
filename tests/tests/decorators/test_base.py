@@ -433,5 +433,5 @@ def test_class_wrapper_decorates_http_methods_only():
     assert decorated_view.instance_attr == original_view.instance_attr
     assert decorated_view.public_method == original_view.public_method
     assert decorated_view._protected_method == original_view._protected_method
-    assert decorated_view.get != original_view.get
+    assert decorated_view.get == original_view.get
     assert decorated_view.dispatch != original_view.dispatch  # redefined in the wrapper
