@@ -1,8 +1,8 @@
-# django-REST
+# django-flash-REST
 
 # Overview
 
-django-REST is a **tiny**, **lightweight**, **easy-to-use** and **incredibly fast** library to implement
+django-flash-REST is a **tiny**, **lightweight**, **easy-to-use** and **incredibly fast** library to implement
 REST views with django. The whole library's focused in **one** decorator that transforms the
 simple views into REST ones, allowing easy customizations (such as permissions, serializers, etc.)
 
@@ -53,7 +53,7 @@ The library itself was highly inspired from the great [django-rest-framework](ht
 
 # Requirements
 
-django-REST library requires:
+django-flash-REST library requires:
 
 -  Python version 2.7+ or 3.3+
 -  django version 1.10+
@@ -63,7 +63,7 @@ django-REST library requires:
 You can get the package using `pip`, as the following:
 
 ```bash
-pip install git+https://github.com/alaouimehdi1995/django-rest.git
+pip install django-flash-rest
 ```
 
 # Example
@@ -73,7 +73,7 @@ Let's implement a quick public API endpoint that lists existing regular (_i.e._ 
 First, start a new django project:
 
 ```sh
-pip install git+https://github.com/alaouimehdi1995/django-rest.git  # Will install django if not already installed
+pip install django-flash-rest # Will install django if not already installed
 django-admin startproject first_project .
 ./manage.py migrate
 ./manage.py createsuperuser
@@ -90,9 +90,9 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.urls import path
 
-from django_rest.decorators import api_view
-from django_rest.http import status
-from django_rest.serializers import fields as fields, Serializer
+from flash_rest.decorators import api_view
+from flash_rest.http import status
+from flash_rest.serializers import fields as fields, Serializer
 
 
 # The serializer defines the output format of our endpoints
@@ -198,7 +198,7 @@ api_view(
 
    A `list`/`tuple` of HTTP allowed methods. Allowed methods should
    be in uppercase strings (_ex.`GET`, `POST`, etc._). You can also use some
-   predefined sets in `django_rest.http.methods`. If no `allowed_methods`
+   predefined sets in `flash_rest.http.methods`. If no `allowed_methods`
    given, all HTTP methods will be allowed.
 
    If the user requests the decorated view
@@ -277,7 +277,7 @@ def decorated_view(
    ```python
    # urls.py
    from django.urls import path
-   from django_rest.decorators import api_view
+   from flash_rest.decorators import api_view
 
    @api_view
    def hello_view(request, url_params, query_params, **kwargs):
@@ -362,16 +362,16 @@ the decorated view's code, then, if the request satisfies the
 permission's constraints, the access is granted. If not, a `403 Forbidden access`
 response is returned.
 
-In django-REST, all permissions inherit from `Permission`, and passed as argument to the `@api_view` decorator, as seen in
+In django-flash-REST, all permissions inherit from `Permission`, and passed as argument to the `@api_view` decorator, as seen in
 the previous examples.
 
-In this section, we will start by introducing the django-REST's provided
+In this section, we will start by introducing the django-flash-REST's provided
 permissions, then how to build more complex permissions by combining the
 existing ones, and finally, how to implement your own custom permission.
 
 ### 2.2 Available Permissions
 
-All the permissions listed below could be imported from `django_rest.permissions`
+All the permissions listed below could be imported from `flash_rest.permissions`
 
 -  **AllowAny**:
    By choosing this permission, your view will be public (all requests will have granted access). It's the default permission for `@api_view` decorator.
@@ -394,7 +394,7 @@ All the permissions listed below could be imported from `django_rest.permissions
 
 Using logical operators allows you to combine different `Permission` sub-classes, in a simple and powerful way, to obtain more complex and complete permissions.
 
-django-REST provides you 4 logical operators: **AND** (`&`), **OR** (`|`), **XOR** (`^`) and **NOT** (`~`).
+django-flash-REST provides you 4 logical operators: **AND** (`&`), **OR** (`|`), **XOR** (`^`) and **NOT** (`~`).
 
 Let's demonstrate those operators then their combinations in concrete examples:
 
@@ -407,8 +407,8 @@ Let's create a new `IsStaffAndReadOnly` permission that grants access to:
 It will be implemented as the following:
 
 ```python
-from django_rest.decorators import api_view
-from django_rest.permissions import IsReadOnly, IsStaffUser
+from flash_rest.decorators import api_view
+from flash_rest.permissions import IsReadOnly, IsStaffUser
 
 IsStaffAndReadOnly = IsStaffUser & IsReadOnly
 
@@ -425,8 +425,8 @@ Let's create a new `IsAdminOrReadOnly` permission granting access to:
 -  Non-admin users with reading http methods (`GET`, `HEAD` and `OPTIONS`) only.
 
 ```python
-from django_rest.decorators import api_view
-from django_rest.permissions import IsAdminUser, IsReadOnly
+from flash_rest.decorators import api_view
+from flash_rest.permissions import IsAdminUser, IsReadOnly
 
 IsAdminOrReadOnly = IsAdminUser | IsReadOnly
 
@@ -447,8 +447,8 @@ correct and readable way). The use of XOR operator here is for demonstration pur
 The correct implementation is shown below in "_5. Combining Operators_" example.
 
 ```python
-from django_rest.decorators import api_view
-from django_rest.permissions import IsAdminUser, IsStaffUser
+from flash_rest.decorators import api_view
+from flash_rest.permissions import IsAdminUser, IsStaffUser
 
 IsStaffAndNotAdminUser = IsAdminUser ^ IsStaffUser
 
@@ -463,8 +463,8 @@ Let's consider a view that should be exposed to anonymous (_i.e._ not
 authenticated) users only. This view's permission will be defined as the following:
 
 ```python
-from django_rest.decorators import api_view
-from django_rest.permissions import IsAuthenticated
+from flash_rest.decorators import api_view
+from flash_rest.permissions import IsAuthenticated
 
 AnonymousUserOnly = ~IsAuthenticated
 
@@ -480,8 +480,8 @@ multiple operators. Then, we'll re-use it (`IsStaffAndNotAdminUser`) to implemen
 `IsStaffAndNotAdminUserOrReadOnly`:
 
 ```python
-from django_rest.decorators import api_view
-from django_rest.permissions import IsAdminUser, IsReadOnly, IsStaffUser
+from flash_rest.decorators import api_view
+from flash_rest.permissions import IsAdminUser, IsReadOnly, IsStaffUser
 
 IsStaffAndNotAdminUser = IsStaffUser & (~ IsAdminUser)
 
@@ -497,8 +497,8 @@ def target_view(request, **kwargs):
 
 Even if combining standard permissions covers the most usual use-cases, you may have some unusual constrains that cannot be tackled using existing operators only.
 
-django-REST provides you a way to implement a custom permission that fits your needs.
-All you have to do is inherit from `django_rest.permissions.BasePermission`, then implement the `has_permission()` method.
+django-flash-REST provides you a way to implement a custom permission that fits your needs.
+All you have to do is inherit from `flash_rest.permissions.BasePermission`, then implement the `has_permission()` method.
 
 The `has_permission()` takes the `request` object, and the target view object as
 arguments, and should return a `bool` that represents if the access should be
@@ -513,8 +513,8 @@ having `gmail` address only. The "authenticated users" part will be taken care
 of using the existing `IsAuthenticated` permission.
 
 ```python
-from django_rest.decorators import api_view
-from django_rest.permissions import BasePermission, IsAuthenticated
+from flash_rest.decorators import api_view
+from flash_rest.permissions import BasePermission, IsAuthenticated
 
 
 class HasGmailAddress(BasePermission):
@@ -536,7 +536,7 @@ While using operators, operands order **matters**.
 
 In the example above, in `HasGmailAddress` code, we assumed that the user is
 already authenticated, instead of manually checking it. That's because if the permission `IsAuthenticated` isn't satisfied,
-django-REST returns a `403 Forbidden access` before even evaluating `HasGmailAddress` permission.
+django-flash-REST returns a `403 Forbidden access` before even evaluating `HasGmailAddress` permission.
 That's why in `HasGmailAddress` code, we assumed the user is authenticated.
 
 If we switched permissions order as the following:
@@ -555,7 +555,7 @@ Otherwise, if an anonymous user requests the view, a `AttributeError: 'NoneType'
 
 ### 3.1. Introduction
 
-In django-REST, a deserializer validates input data (request payload and/or form data)
+In django-flash-REST, a deserializer validates input data (request payload and/or form data)
 based on custom fields ans constrains defined in the deserializer class,
 then "translates" data into the target format (Python primitive types), and finally
 executes some post-validation methods (if defined).
@@ -569,7 +569,7 @@ Defining a new `Deserializer` is quite simple. All you need to do is to inherit
 from `Deserializer` class:
 
 ```python
-from django_rest.deserializers import Deserializer
+from flash_rest.deserializers import Deserializer
 
 
 class MyCustomDeserializer(Deserializer):
@@ -581,7 +581,7 @@ a simple `Deserializer` with 2 fields: a positive integer primary key (`pk`),
 and a `username` (string).
 
 ```python
-from django_rest.deserializers import fields, Deserializer
+from flash_rest.deserializers import fields, Deserializer
 
 
 class MyCustomDeserializer(Deserializer):
@@ -603,7 +603,7 @@ outside the `@api_view`'s `deserializer_class` argument, you have two approaches
 Here is a simple example:
 
 ```python
-from django_rest.deserializers import fields, Deserializer
+from flash_rest.deserializers import fields, Deserializer
 
 
 class MyCustomDeserializer(Deserializer):
@@ -633,7 +633,7 @@ invalid_instance.errors  # {"pk": ["Ensure this value is greater than or equal t
 Here is a simple example:
 
 ```python
-from django_rest.deserializers import fields, Deserializer, ValidationError
+from flash_rest.deserializers import fields, Deserializer, ValidationError
 
 
 class MyCustomDeserializer(Deserializer):
@@ -659,7 +659,7 @@ else:
 
 ### 3.3. Available Deserializer Fields
 
-django-REST deserializers use native django forms fields. **Depending on the
+django-flash-REST deserializers use native django forms fields. **Depending on the
 django version you are using**, you may have access (or not) to some fields, and some of
 their attributes. More details on [django's official doc](https://docs.djangoproject.com/en/3.0/ref/forms/fields/).
 
@@ -669,14 +669,14 @@ their attributes. More details on [django's official doc](https://docs.djangopro
 
 ### 3.4 Nested Deserializers
 
-django-REST offers support for nesting deserializers, in order to build more complex ones, in a flexible way and without losing readability.
+django-flash-REST offers support for nesting deserializers, in order to build more complex ones, in a flexible way and without losing readability.
 
 By nesting deserializers, errors are nested, and output data is a nested `dict`
 too. The following example illustrates how to nest deserializers:
 
 ```python
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django_rest.deserializers import fields, Deserializer
+from flash_rest.deserializers import fields, Deserializer
 
 
 class RaceDriverDeserializer(Deserializer):
@@ -757,7 +757,7 @@ say: striping border spaces), the post-clean method for that field should be
 named `post_clean_foo()`:
 
 ```python
-from django_rest.deserializers import fields, Deserializer
+from flash_rest.deserializers import fields, Deserializer
 
 
 class FooDeserializer(Deserializer):
@@ -800,9 +800,9 @@ example:
 ```python
 from django.http import JsonResponse
 
-from django_rest.decorators import api_view
-from django_rest.http import status
-from django_rest.serializers import fields, Serializer
+from flash_rest.decorators import api_view
+from flash_rest.http import status
+from flash_rest.serializers import fields, Serializer
 
 from .models import Subscription
 
@@ -834,7 +834,7 @@ def subscription_details_view(request, url_params, **kwargs):
 
 Serializers fields are very limited, because, remember that the data will be converted
 into native Python data-types (that are limited too). Besides primitive fields (`CharField`,
-`IntegerField`, `FloatField`, `BooleanField`), django-REST provides 3 additional
+`IntegerField`, `FloatField`, `BooleanField`), django-flash-REST provides 3 additional
 fields to use within `Serializers`: `ListField`, `ConstantField` and `MethodField` (and the nested
 serializers). Let's dive into existing fields details.
 
@@ -943,7 +943,7 @@ while the `MethodField` receives the whole object.
 Here is a simple example that illustrates how `MethodField` works:
 
 ```python
-from django_rest.serializers import fields, Serializer
+from flash_rest.serializers import fields, Serializer
 
 TAX_RATE = 20
 
@@ -988,7 +988,7 @@ created a `MethodField` that returns a constant. Both solutions are quite
 "painful". Using `ConstantField`, the code will look like:
 
 ```python
-from django_rest.serializers import fields, Serializer
+from flash_rest.serializers import fields, Serializer
 
 TAX_RATE = 20
 
@@ -1040,7 +1040,7 @@ ListField(Union[BooleanField, CharField, FloatField, IntegerField])
 Here is a simple example:
 
 ```python
-from django_rest.serializers import fields, Serializer
+from flash_rest.serializers import fields, Serializer
 
 
 class Path:
@@ -1069,7 +1069,7 @@ that shows how to nest serializers:
 ```python
 from datetime import datetime
 
-from django_rest.serializers import fields, Serializer
+from flash_rest.serializers import fields, Serializer
 
 
 class Invoice:
@@ -1109,7 +1109,7 @@ difference):
 ```python
 from datetime import datetime
 
-from django_rest.serializers import fields, DictSerializer
+from flash_rest.serializers import fields, DictSerializer
 
 
 subscription = {
@@ -1139,7 +1139,7 @@ SubscriptionSerializer(instance=subscription).data  # {'name': 'foo bar subscrip
 ### 5.1. `@api_view` exceptions catching
 
 The `@api_view` decorator catches exceptions for you in case you did not, and returns a JSON response with the correct status code.
-If the raised exception is a sub-class of `django_rest.http.exceptions.BaseAPIException`, a custom message and status code will be returned.
+If the raised exception is a sub-class of `flash_rest.http.exceptions.BaseAPIException`, a custom message and status code will be returned.
 If it's not the case, the returned JSON response will have `"An unknown server error occured."` as message, and `500` as status code.
 
 By raising one of the [existing API exceptions](#52-existing-api-exceptions) (or
@@ -1153,8 +1153,8 @@ ensures that:
 Here is a simple example of a view that receives `url_params`, calls a `find_results()` function, and returns a `404` in case there is no result:
 
 ```python
-from django_rest.decorators import api_view
-from django_rest.http.exceptions import NotFound
+from flash_rest.decorators import api_view
+from flash_rest.http.exceptions import NotFound
 
 @api_view
 def user_custom_view(request, url_params, **kwargs):
@@ -1168,7 +1168,7 @@ def user_custom_view(request, url_params, **kwargs):
 
 ### 5.2. Existing API Exceptions
 
-As seen in the previous chapter, django-REST provides you some custom exceptions that you can use (_i.e._ raise) so that your view returns an error response,
+As seen in the previous chapter, django-flash-REST provides you some custom exceptions that you can use (_i.e._ raise) so that your view returns an error response,
 without having to do it manually everytime. Here is the list of the available API exceptions , each with its returned object and status code:
 
 -  **BadRequest**:
@@ -1206,13 +1206,13 @@ without having to do it manually everytime. Here is the list of the available AP
 ### 5.3. Define your own API Exception
 
 In order to define your own API Exception, all you have to do is inheriting from
-`django_rest.http.exceptions.BaseAPIException` (or one of its sub-classes), then override its `STATUS_CODE` and `RESPONSE_MESSAGE` attributes.
+`flash_rest.http.exceptions.BaseAPIException` (or one of its sub-classes), then override its `STATUS_CODE` and `RESPONSE_MESSAGE` attributes.
 
 Here is a simple example that shows how to define a [conflict](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/409) exception:
 
 ```python
-from django_rest.decorators import api_view
-from django_rest.http import exceptions, status
+from flash_rest.decorators import api_view
+from flash_rest.http import exceptions, status
 
 class Conflict(exceptions.BaseAPIException):
     STATUS_CODE = status.HTTP_409_CONFLICT
@@ -1228,27 +1228,27 @@ def my_conflicting_view(request, **kwargs):
 
 ## 6. HTTP
 
-django-REST provides some constants/enumerations that allow you to avoid using
+django-flash-REST provides some constants/enumerations that allow you to avoid using
 hard-coded values (`str` for HTTP methods, and `int` for status codes), and
 improve your code readability.
 
 ### 6.1. HTTP Status codes
 
-The HTTP status codes can be imported from `django_rest.http.status`:
+The HTTP status codes can be imported from `flash_rest.http.status`:
 
 ```python
-from django_rest.http.status import HTTP_200_OK
+from flash_rest.http.status import HTTP_200_OK
 
 response_status = HTTP_200_OK
 
 # OR
-from django_rest.http import status
+from flash_rest.http import status
 
 response_status = status.HTTP_200_OK
 
 ```
 
-Here is the exhaustive list of http status constants provided by django-REST
+Here is the exhaustive list of http status constants provided by django-flash-REST
 (more details about status codes [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status)):
 
 -  `HTTP_100_CONTINUE`
@@ -1312,7 +1312,7 @@ Here is the exhaustive list of http status constants provided by django-REST
 -  `HTTP_510_NOT_EXTENDED`
 -  `HTTP_511_NETWORK_AUTHENTICATION_REQUIRED`
 
-Besides, you also have (in the same module `django_rest.http.status`) 5 functions that you can use to verify
+Besides, you also have (in the same module `flash_rest.http.status`) 5 functions that you can use to verify
 a status code category easily:
 
 -  `is_informational(code: int) -> bool`
@@ -1324,7 +1324,7 @@ a status code category easily:
 ### 6.2. HTTP Methods
 
 All the following HTTP method's related constants can be found in
-`django_rest.http.methods`:
+`flash_rest.http.methods`:
 
 **String constants:**
 
