@@ -1,13 +1,12 @@
 from setuptools import find_packages, setup
 
-
 with open("README.md", "r", encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
-    name="django-rest",
-    version="0.7.4",
-    url="https://github.com/alaouimehdi1995/django-rest/",
+    name="django-flash-rest",
+    version="0.8.4",
+    url="https://github.com/alaouimehdi1995/django-flash-rest/",
     license="MIT",
     description="Tiny, lightweight, blazing fast REST library for django",
     keywords="django REST library fast light serializer",
@@ -15,7 +14,7 @@ setup(
     long_description_content_type="text/markdown",
     author="Mehdi Alaoui",
     author_email="alaoui.mehdi.1995@gmail.com",
-    packages=find_packages(include=["django_rest*"]),
+    packages=find_packages(include=["flash_rest*"]),
     install_requires=["django>=1.11", "six"],
     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, <4",
     classifiers=[
@@ -52,5 +51,5 @@ setup(
         "Topic :: Internet",
         "Topic :: Internet :: WWW/HTTP",
     ],
-    project_urls={"Source": "https://github.com/alaouimehdi1995/django-rest/",},
+    project_urls={"Source": "https://github.com/alaouimehdi1995/django-flash-rest/",},
 )
