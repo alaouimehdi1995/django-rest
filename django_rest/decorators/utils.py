@@ -7,6 +7,7 @@ from functools import wraps
 
 from django.http import JsonResponse
 from django.views import View
+from django.views.decorators.csrf import csrf_exempt
 
 from django_rest.deserializers import (
     Deserializer,
@@ -127,7 +128,7 @@ def build_function_wrapper(
                 status=InternalServerError.STATUS_CODE,
             )
 
-    return function_wrapper
+    return csrf_exempt(function_wrapper)
 
 
 def build_class_wrapper(
@@ -144,31 +145,32 @@ def build_class_wrapper(
 
         def __init__(self, *args, **kwargs):
             self._wrapped_view = view_class(*args, **kwargs)
+            self.compiled_dispatch = build_function_wrapper(
+                permission_class,
+                allowed_methods,
+                deserializers_http_methods_map,
+                allow_forms,
+                self._handle_request,
+            )
 
-        def dispatch(self, request, *args, **kwargs):
+        def _handle_request(self, request, *args, **kwargs):
             # type:(HttpRequest, List[Any]) -> JsonResponse
             # No need for additional check on request.method, since it's been
             # already checked
             handler = getattr(self, request.method.lower())
             return handler(request, *args, **kwargs)
 
+        @csrf_exempt
+        def dispatch(self, *args, **kwargs):
+            # type:(HttpRequest, List[Any]) -> JsonResponse
+            return self.compiled_dispatch(*args, **kwargs)
+
         def __getattribute__(self, name):
             try:
                 return super(ViewWrapper, self).__getattribute__(name)
             except AttributeError:
                 attribute = self._wrapped_view.__getattribute__(name)
-                if (
-                    not inspect.ismethod(attribute)
-                    or name.upper() not in ALL_HTTP_METHODS
-                ):
-                    return attribute
-                return build_function_wrapper(
-                    permission_class,
-                    allowed_methods,
-                    deserializers_http_methods_map,
-                    allow_forms,
-                    attribute,
-                )
+                return attribute
 
     ViewWrapper.__name__ = view_class.__name__
     return ViewWrapper
