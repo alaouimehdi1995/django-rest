@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django_rest.deserializers import fields, Deserializer, AllPassDeserializer
+from flash_rest.deserializers import AllPassDeserializer, Deserializer, fields
 
 
 def test_fields_method_should_iterate_over_form_fields():

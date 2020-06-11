@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from django_rest.http.exceptions import BaseAPIException
+from flash_rest.http.exceptions import BaseAPIException
 
 
 class SerializationError(BaseAPIException):

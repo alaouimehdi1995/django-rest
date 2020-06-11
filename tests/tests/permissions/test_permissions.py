@@ -1,17 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from mock import Mock
 import pytest
+from mock import Mock
 
-from django_rest.permissions import (
-    AllowAny,
-    BasePermission,
-    IsAdminUser,
-    IsAuthenticated,
-    IsAuthenticatedOrReadOnly,
-    IsReadOnly,
-    IsStaffUser,
-)
+from flash_rest.permissions import (AllowAny, BasePermission, IsAdminUser,
+                                     IsAuthenticated,
+                                     IsAuthenticatedOrReadOnly, IsReadOnly,
+                                     IsStaffUser)
 
 
 def test_is_admin_or_read_only_permission_should_forbid_access_to_non_admin_POST_request():

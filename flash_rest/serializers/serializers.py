@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import operator
+
 import six
 
-from django_rest.serializers.base import Field, SerializerBase
-from django_rest.serializers.exceptions import SerializationError
+from flash_rest.serializers.base import Field, SerializerBase
+from flash_rest.serializers.exceptions import SerializationError
 
 
 def _compile_field_to_tuple(field, serializer_field_name, serializer_cls):

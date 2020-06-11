@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import six
-
 from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
 from django.forms.fields import Field
 from django.forms.forms import DeclarativeFieldsMetaclass
