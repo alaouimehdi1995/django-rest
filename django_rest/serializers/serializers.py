@@ -115,7 +115,7 @@ class Serializer(six.with_metaclass(SerializerMeta, SerializerBase)):
                             result = result()
                         if to_value:
                             result = to_value(result)
-            except (KeyError, AttributeError, TypeError) as e:
+            except (KeyError, AttributeError, TypeError, ValueError) as e:
                 if required:
                     raise SerializationError(str(e))
             else:
