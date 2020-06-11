@@ -9,7 +9,7 @@ from django_rest.deserializers import (
     Deserializer,
     AllPassDeserializer,
 )
-from django_rest.http.methods import ALL_HTTP_METHODS
+from django_rest.http.methods import ALL_METHODS
 from django_rest.decorators.utils import (
     build_class_wrapper,
     build_deserializer_map,
@@ -26,7 +26,7 @@ FORMS_CONTENT_TYPES = (
 
 def api_view(
     permission_class=AllowAny,  # type: Union[AbstractPermission, Any]
-    allowed_methods=ALL_HTTP_METHODS,  # type: Tuple[str]
+    allowed_methods=ALL_METHODS,  # type: Tuple[str]
     deserializer_class=AllPassDeserializer,  # type: Union[ClassVar[Deserializer], Dict[str, ClassVar[Deserializer]]]
     allow_forms=False,  # type: bool
 ):  # type:(...) -> Callable

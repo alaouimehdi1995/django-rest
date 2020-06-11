@@ -20,7 +20,7 @@ from django_rest.http.exceptions import (
     MethodNotAllowed,
     PermissionDenied,
 )
-from django_rest.http.methods import ALL_HTTP_METHODS, HTTP_METHODS_SUPPORTING_PAYLOAD
+from django_rest.http.methods import SUPPORTING_PAYLOAD_METHODS
 from django_rest.permissions import BasePermission
 
 FORMS_CONTENT_TYPES = (
@@ -40,12 +40,12 @@ def build_deserializer_map(deserializer_class):
             )
         return {
             http_method: deserializer_class.get(http_method, AllPassDeserializer)
-            for http_method in HTTP_METHODS_SUPPORTING_PAYLOAD
+            for http_method in SUPPORTING_PAYLOAD_METHODS
         }
     if issubclass(deserializer_class, Deserializer):
         return {
             http_method: deserializer_class
-            for http_method in HTTP_METHODS_SUPPORTING_PAYLOAD
+            for http_method in SUPPORTING_PAYLOAD_METHODS
         }
 
     raise TypeError(
@@ -81,7 +81,7 @@ def extract_request_payload(request, allow_form_data=False):
     elif request.content_type in FORMS_CONTENT_TYPES and request.method == "POST":
         return transform_query_dict_into_regular_dict(request.POST)
 
-    if method not in HTTP_METHODS_SUPPORTING_PAYLOAD:
+    if method not in SUPPORTING_PAYLOAD_METHODS:
         return None
 
     return json.loads(request.body.decode())
@@ -104,7 +104,7 @@ def build_function_wrapper(
                 raise PermissionDenied
             query_params = transform_query_dict_into_regular_dict(request.GET)
             payload = extract_request_payload(request, allow_forms)
-            if request.method in HTTP_METHODS_SUPPORTING_PAYLOAD:
+            if request.method in SUPPORTING_PAYLOAD_METHODS:
                 deserializer = deserializers_http_methods_map[request.method](
                     data=payload
                 )
