@@ -70,8 +70,8 @@ class BinaryOperator(object):
     """
 
     @staticmethod
-    def calculate(value1, value2):
-        # type:(bool, bool) -> bool
+    def calculate(first_function, second_function, *args, **kwargs):
+        # type:(Callable, Callable, *Any, **Any) -> bool
         raise NotImplementedError(
             "`calculate()` method should be defined in subclasses"
         )
@@ -99,9 +99,9 @@ class BinaryOperator(object):
 
         def has_permission(self, request, view):
             # type:(HttpRequest, Callable) -> bool
-            first_result = permission_class_1().has_permission(request, view)
-            second_result = permission_class_2().has_permission(request, view)
-            return cls.calculate(first_result, second_result)
+            permission_func_1 = permission_class_1().has_permission
+            permission_func_2 = permission_class_2().has_permission
+            return cls.calculate(permission_func_1, permission_func_2, request, view)
 
         result_class.has_permission = has_permission
         return result_class
@@ -132,8 +132,8 @@ class UnaryOperator(object):
     OPERATOR_NAME = None
 
     @staticmethod
-    def calculate(value):
-        # type:(bool) -> bool
+    def calculate(function, *args, **kwargs):
+        # type:(Callable, *Any, **Any) -> bool
         raise NotImplementedError(
             "`calculate()` method should be defined in subclasses"
         )
@@ -157,8 +157,8 @@ class UnaryOperator(object):
 
         def has_permission(self, request, view):
             # type:(HttpRequest, Callable) -> bool
-            result = permission_class().has_permission(request, view)
-            return cls.calculate(result)
+            permission_func = permission_class().has_permission
+            return cls.calculate(permission_func, request, view)
 
         result_class.has_permission = has_permission
         return result_class
@@ -180,9 +180,9 @@ class AND(six.with_metaclass(MetaOperand, BinaryOperator)):
     OPERATOR_NAME = "_AND_"
 
     @staticmethod
-    def calculate(value1, value2):
-        # type:(bool, bool) -> bool
-        return value1 and value2
+    def calculate(first_function, second_function, *args, **kwargs):
+        # type:(Callable, Callable, *Any, **Any) -> bool
+        return first_function(*args, **kwargs) and second_function(*args, **kwargs)
 
 
 class OR(six.with_metaclass(MetaOperand, BinaryOperator)):
@@ -198,9 +198,9 @@ class OR(six.with_metaclass(MetaOperand, BinaryOperator)):
     OPERATOR_NAME = "_OR_"
 
     @staticmethod
-    def calculate(value1, value2):
-        # type:(bool, bool) -> bool
-        return value1 or value2
+    def calculate(first_function, second_function, *args, **kwargs):
+        # type:(Callable, Callable, *Any, **Any) -> bool
+        return first_function(*args, **kwargs) or second_function(*args, **kwargs)
 
 
 class XOR(six.with_metaclass(MetaOperand, BinaryOperator)):
@@ -216,9 +216,9 @@ class XOR(six.with_metaclass(MetaOperand, BinaryOperator)):
     OPERATOR_NAME = "_XOR_"
 
     @staticmethod
-    def calculate(value1, value2):
-        # type:(bool, bool) -> bool
-        return value1 ^ value2
+    def calculate(first_function, second_function, *args, **kwargs):
+        # type:(Callable, Callable, *Any, **Any) -> bool
+        return first_function(*args, **kwargs) ^ second_function(*args, **kwargs)
 
 
 class NOT(six.with_metaclass(MetaOperand, UnaryOperator)):
@@ -234,9 +234,9 @@ class NOT(six.with_metaclass(MetaOperand, UnaryOperator)):
     OPERATOR_NAME = "NOT_"
 
     @staticmethod
-    def calculate(value):
-        # type:(bool) -> bool
-        return not value
+    def calculate(function, *args, **kwargs):
+        # type:(Callable, *Any, **Any) -> bool
+        return not function(*args, **kwargs)
 
 
 class BasePermission(six.with_metaclass(MetaOperand, object)):
