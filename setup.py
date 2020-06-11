@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as f:
 
 setup(
     name="django-rest",
-    version="0.5.8",
+    version="0.7.4",
     url="https://github.com/alaouimehdi1995/django-rest/",
     license="MIT",
     description="Tiny, lightweight, blazing fast REST library for django",
@@ -15,7 +15,7 @@ setup(
     long_description_content_type="text/markdown",
     author="Mehdi Alaoui",
     author_email="alaoui.mehdi.1995@gmail.com",
-    packages=find_packages(exclude=["tests*", "docs*"]),
+    packages=find_packages(include=["django_rest"]),
     install_requires=["django>=1.11", "six"],
     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, <4",
     classifiers=[
