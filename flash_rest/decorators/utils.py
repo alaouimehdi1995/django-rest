@@ -1,28 +1,19 @@
 # -*- coding: utf-8 -*-
 
-import inspect
 import json
 from functools import wraps
-
 
 from django.http import JsonResponse
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
-from django_rest.deserializers import (
-    Deserializer,
-    AllPassDeserializer,
-)
-from django_rest.http.exceptions import (
-    BadRequest,
-    BaseAPIException,
-    InternalServerError,
-    MethodNotAllowed,
-    PermissionDenied,
-    UnsupportedMediaType,
-)
-from django_rest.http.methods import SUPPORTING_PAYLOAD_METHODS
-from django_rest.permissions import BasePermission
+from flash_rest.deserializers import AllPassDeserializer, Deserializer
+from flash_rest.http.exceptions import (BadRequest, BaseAPIException,
+                                         InternalServerError, MethodNotAllowed,
+                                         PermissionDenied,
+                                         UnsupportedMediaType)
+from flash_rest.http.methods import SUPPORTING_PAYLOAD_METHODS
+from flash_rest.permissions import BasePermission
 
 FORMS_CONTENT_TYPES = (
     "application/x-www-form-urlencoded",

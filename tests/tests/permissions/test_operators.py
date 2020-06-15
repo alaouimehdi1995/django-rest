@@ -1,18 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from mock import Mock
 import pytest
 import six
+from mock import Mock
 
-from django_rest.permissions import (
-    BasePermission,
-    BinaryOperator,
-    IsAdminUser,
-    IsAuthenticated,
-    IsReadOnly,
-    MetaOperand,
-    UnaryOperator,
-)
+from flash_rest.permissions import (BasePermission, BinaryOperator,
+                                     IsAdminUser, IsAuthenticated, IsReadOnly,
+                                     MetaOperand, UnaryOperator)
 
 
 def test_binary_operator_on_permissions_should_return_well_formed_permission():

@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import six
 import types
 
-from django_rest.serializers import Serializer
-from django_rest.serializers.base import Field
-from django_rest.serializers.exceptions import SerializationError
+import six
+
+from flash_rest.serializers import Serializer
+from flash_rest.serializers.base import Field
+from flash_rest.serializers.exceptions import SerializationError
 
 if six.PY34:
     from collections.abc import Iterable, Mapping  # pragma: no cover
