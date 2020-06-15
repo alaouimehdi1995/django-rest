@@ -5,7 +5,7 @@ from django.test.client import RequestFactory
 from django.views import View
 from mock import Mock
 
-from flash_rest.decorators import api_view
+from django_rest.decorators import api_view
 
 rf = RequestFactory()
 
@@ -18,7 +18,7 @@ def _mock_view(**kwargs):
 def test_api_view_without_parenthesis_syntax_works_on_function_based_views(monkeypatch):
     # Given
     monkeypatch.setattr(
-        "flash_rest.decorators.inspect.isfunction", lambda x: isinstance(x, Mock)
+        "django_rest.decorators.inspect.isfunction", lambda x: isinstance(x, Mock)
     )
     request = rf.get("/whatever/?filter=true&page=3")
     target_view = _mock_view()
@@ -43,7 +43,7 @@ def test_api_view_with_parenthesis_without_args_syntax_works_on_function_based_v
 ):
     # Given
     monkeypatch.setattr(
-        "flash_rest.decorators.inspect.isfunction", lambda x: isinstance(x, Mock)
+        "django_rest.decorators.inspect.isfunction", lambda x: isinstance(x, Mock)
     )
     request = rf.get("/whatever/?filter=true&page=3")
     target_view = _mock_view()
@@ -68,7 +68,7 @@ def test_api_view_with_parenthesis_with_args_syntax_works_on_function_based_view
 ):
     # Given
     monkeypatch.setattr(
-        "flash_rest.decorators.inspect.isfunction", lambda x: isinstance(x, Mock)
+        "django_rest.decorators.inspect.isfunction", lambda x: isinstance(x, Mock)
     )
     request = rf.get("/whatever/?filter=true&page=3")
     target_view = _mock_view()
@@ -91,7 +91,7 @@ def test_api_view_with_parenthesis_with_args_syntax_works_on_function_based_view
 def test_api_view_without_parenthesis_syntax_works_on_class_based_views(monkeypatch):
     # Given
     monkeypatch.setattr(
-        "flash_rest.decorators.inspect.ismethod", lambda x: isinstance(x, Mock)
+        "django_rest.decorators.inspect.ismethod", lambda x: isinstance(x, Mock)
     )
     mocked_get = _mock_view()
 
@@ -121,7 +121,7 @@ def test_api_view_with_parenthesis_without_args_syntax_works_on_class_based_view
 ):
     # Given
     monkeypatch.setattr(
-        "flash_rest.decorators.inspect.ismethod", lambda x: isinstance(x, Mock)
+        "django_rest.decorators.inspect.ismethod", lambda x: isinstance(x, Mock)
     )
     mocked_get = _mock_view()
 
@@ -151,7 +151,7 @@ def test_api_view_with_parenthesis_with_args_syntax_works_on_class_based_views(
 ):
     # Given
     monkeypatch.setattr(
-        "flash_rest.decorators.inspect.ismethod", lambda x: isinstance(x, Mock)
+        "django_rest.decorators.inspect.ismethod", lambda x: isinstance(x, Mock)
     )
     mocked_get = _mock_view()
 

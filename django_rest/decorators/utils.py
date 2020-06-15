@@ -7,13 +7,17 @@ from django.http import JsonResponse
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
-from flash_rest.deserializers import AllPassDeserializer, Deserializer
-from flash_rest.http.exceptions import (BadRequest, BaseAPIException,
-                                         InternalServerError, MethodNotAllowed,
-                                         PermissionDenied,
-                                         UnsupportedMediaType)
-from flash_rest.http.methods import SUPPORTING_PAYLOAD_METHODS
-from flash_rest.permissions import BasePermission
+from django_rest.deserializers import AllPassDeserializer, Deserializer
+from django_rest.http.exceptions import (
+    BadRequest,
+    BaseAPIException,
+    InternalServerError,
+    MethodNotAllowed,
+    PermissionDenied,
+    UnsupportedMediaType,
+)
+from django_rest.http.methods import SUPPORTING_PAYLOAD_METHODS
+from django_rest.permissions import BasePermission
 
 FORMS_CONTENT_TYPES = (
     "application/x-www-form-urlencoded",

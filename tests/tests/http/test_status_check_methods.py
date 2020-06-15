@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from flash_rest.http.status import (is_client_error, is_informational,
-                                     is_redirect, is_server_error, is_success)
+from django_rest.http.status import (
+    is_client_error,
+    is_informational,
+    is_redirect,
+    is_server_error,
+    is_success,
+)
 
 
 def test_is_informational():

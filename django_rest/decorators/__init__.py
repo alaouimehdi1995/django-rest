@@ -4,12 +4,14 @@ import inspect
 
 from django.views import View
 
-from flash_rest.decorators.utils import (build_class_wrapper,
-                                          build_deserializer_map,
-                                          build_function_wrapper)
-from flash_rest.deserializers import AllPassDeserializer, Deserializer
-from flash_rest.http.methods import ALL_METHODS
-from flash_rest.permissions import AllowAny, BasePermission
+from django_rest.decorators.utils import (
+    build_class_wrapper,
+    build_deserializer_map,
+    build_function_wrapper,
+)
+from django_rest.deserializers import AllPassDeserializer, Deserializer
+from django_rest.http.methods import ALL_METHODS
+from django_rest.permissions import AllowAny, BasePermission
 
 FORMS_CONTENT_TYPES = (
     "application/x-www-form-urlencoded",

@@ -3,11 +3,11 @@
 import time
 
 import serpy
-from flash_rest.serializers import Serializer
-from flash_rest.serializers.fields import CharField, IntegerField, MethodField
+from django_rest.serializers import Serializer
+from django_rest.serializers.fields import CharField, IntegerField, MethodField
 
 
-class Nested_DjangoFlashSerializer(Serializer):
+class NestedDjangoRESTSerializer(Serializer):
     w = IntegerField()
     x = MethodField()
     y = CharField()
@@ -17,11 +17,11 @@ class Nested_DjangoFlashSerializer(Serializer):
         return obj.x + 10
 
 
-class ComplexDjangoFlashSerializer(Serializer):
+class ComplexDjangoRESTSerializer(Serializer):
     foo = CharField()
     bar = IntegerField()
-    sub = Nested_DjangoFlashSerializer()
-    subs = Nested_DjangoFlashSerializer(many=True)
+    sub = NestedDjangoRESTSerializer()
+    subs = NestedDjangoRESTSerializer(many=True)
 
 
 class NestedSerpySerializer(serpy.Serializer):
@@ -63,19 +63,19 @@ class ComplexObject(object):
 def runtest_function(test_set_length):
     test_set = [ComplexObject() for i in range(test_set_length)]
 
-    # flash_rest
+    # django_rest
     start_time = time.time()
-    flash_rest_result = ComplexDjangoFlashSerializer(instance=test_set, many=True).data
-    flash_rest_timing = time.time() - start_time
+    django_rest_result = ComplexDjangoRESTSerializer(instance=test_set, many=True).data
+    django_rest_timing = time.time() - start_time
 
     # Serpy
     start_time = time.time()
     serpy_result = ComplexSerpySerializer(instance=test_set, many=True).data
     serpy_timing = time.time() - start_time
 
-    assert flash_rest_result == serpy_result
+    assert django_rest_result == serpy_result
 
-    speed_ratio = flash_rest_timing / serpy_timing
+    speed_ratio = django_rest_timing / serpy_timing
     assert speed_ratio < 1.1
 
 

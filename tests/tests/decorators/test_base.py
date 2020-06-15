@@ -9,13 +9,20 @@ from django.test.client import RequestFactory
 from django.views import View
 from mock import Mock
 
-from flash_rest.decorators.utils import (
-    build_class_wrapper, build_deserializer_map, build_function_wrapper,
-    extract_request_payload, transform_query_dict_into_regular_dict)
-from flash_rest.deserializers import AllPassDeserializer, Deserializer
-from flash_rest.http.exceptions import (BaseAPIException, InternalServerError,
-                                         UnsupportedMediaType)
-from flash_rest.permissions import AllowAny, BasePermission
+from django_rest.decorators.utils import (
+    build_class_wrapper,
+    build_deserializer_map,
+    build_function_wrapper,
+    extract_request_payload,
+    transform_query_dict_into_regular_dict,
+)
+from django_rest.deserializers import AllPassDeserializer, Deserializer
+from django_rest.http.exceptions import (
+    BaseAPIException,
+    InternalServerError,
+    UnsupportedMediaType,
+)
+from django_rest.permissions import AllowAny, BasePermission
 
 rf = RequestFactory()
 

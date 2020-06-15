@@ -3,8 +3,8 @@
 import pytest
 from mock import Mock
 
-from flash_rest.serializers import DictSerializer, Serializer, fields
-from flash_rest.serializers.exceptions import SerializationError
+from django_rest.serializers import DictSerializer, Serializer, fields
+from django_rest.serializers.exceptions import SerializationError
 
 
 def test_simple_serializer():
