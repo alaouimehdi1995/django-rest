@@ -18,5 +18,6 @@ COPY pytest.ini .
 COPY tests/tests tests
 
 ENTRYPOINT pytest tests --cov=django_rest --cov-report="html:/usr/src/app/.report/" --show-capture=no -s
-# To run benchmark, uncomment the following line:
+# To run benchmark, uncomment one of the following lines:
 #ENTRYPOINT pytest tests/serializers/benchmark.py
+#ENTRYPOINT pytest tests/decorators/benchmark/benchmark.py
