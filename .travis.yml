@@ -1,0 +1,42 @@
+language: python
+
+git:
+  depth: false
+  quiet: true
+
+python:
+  - 2.7
+  - 3.5
+  - 3.8
+
+stages:
+  - Code formatter
+  - Code linter
+  - Unit-tests
+
+jobs:
+  include:
+    - python: 3.8
+      stage: Code formatter
+      install:
+        - pip install black
+      script:
+        - black .
+    - python: 2.7
+      stage: Code linter
+      install:
+        - pip install flake8
+      script:
+        - flake8 .
+
+stage: Unit-tests
+before_install:
+  - pip install pip-tools
+  - pip-compile --output-file=requirements.txt ./tests/requirements/requirements.in  # Building the requirements file depending on python version
+install:
+  - pip install -r requirements.txt
+  - django-admin startproject testproject .
+script:
+  - pytest tests --cov=django_rest --cov-report=xml:.report/report.xml
+after_success:
+  - codecov # Submitting coverage
