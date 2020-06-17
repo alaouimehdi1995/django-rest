@@ -5,8 +5,8 @@ from decimal import Decimal
 import pytest
 from mock import Mock
 
-from flash_rest.serializers import fields
-from flash_rest.serializers.exceptions import SerializationError
+from django_rest.serializers import fields
+from django_rest.serializers.exceptions import SerializationError
 
 
 def test_to_value_method_of_base_field_should_return_its_input():

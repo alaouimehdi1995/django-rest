@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flash_rest.http import status
+from django_rest.http import status
 
 
 class BaseAPIException(Exception):

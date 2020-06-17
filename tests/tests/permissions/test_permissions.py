@@ -3,10 +3,15 @@
 import pytest
 from mock import Mock
 
-from flash_rest.permissions import (AllowAny, BasePermission, IsAdminUser,
-                                     IsAuthenticated,
-                                     IsAuthenticatedOrReadOnly, IsReadOnly,
-                                     IsStaffUser)
+from django_rest.permissions import (
+    AllowAny,
+    BasePermission,
+    IsAdminUser,
+    IsAuthenticated,
+    IsAuthenticatedOrReadOnly,
+    IsReadOnly,
+    IsStaffUser,
+)
 
 
 def test_is_admin_or_read_only_permission_should_forbid_access_to_non_admin_POST_request():

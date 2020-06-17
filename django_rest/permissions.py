@@ -2,7 +2,7 @@
 
 import six
 
-from flash_rest.http.methods import SAFE_METHODS
+from django_rest.http.methods import SAFE_METHODS
 
 
 class MetaOperand(type):
