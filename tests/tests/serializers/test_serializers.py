@@ -110,7 +110,7 @@ def test_nested_serializers_with_many_option():
     data = BSerializer(obj).data
 
     # Then
-    assert data == {"b": [{"a": 0}, {"a": 1}, {"a": 2},]}
+    assert data == {"b": [{"a": 0}, {"a": 1}, {"a": 2}]}
 
 
 def test_nested_serializers_with_call_option():

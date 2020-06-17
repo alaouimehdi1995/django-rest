@@ -90,7 +90,7 @@ def test_constant_field():
     assert fn(Mock()) == 1.3
 
     fn = fields.ConstantField().as_getter("whatever", Mock())
-    assert fn(Mock()) == None
+    assert fn(Mock()) is None
 
     fn = fields.ConstantField(constant=[1.3, True]).as_getter("whatever", Mock())
     assert fn(Mock()) == [1.3, True]
