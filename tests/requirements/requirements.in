@@ -1,9 +1,17 @@
+black; python_version >= '3.6'
+codecov
 coverage
-django==1.*
-enum34
-mock
+# Using different django versions, depending on python's version:
+# 1. For python2: Installing django v1
+# 2. For python3 with version under 3.6, Installing django v2 for python2
+# 3. For python 3 with version higher than 3.6, Installing django v3.
+django==1.*; python_version < '3'
+django==2.*; python_version >= '3' and python_version < '3.6'
+django==3.*; python_version >= '3.6'
+enum34; python_version < '3'
+flake8
+mock; python_version < '3'
 pudb
 pytest
 pytest-cov
 pytest-django
-#psycopg2==2.*
