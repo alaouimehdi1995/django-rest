@@ -1,5 +1,15 @@
 # django-REST
 
+[![PyPI version](https://badge.fury.io/py/django-rest.svg)](https://badge.fury.io/py/django-rest)
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/django-rest.svg)](https://pypi.python.org/pypi/django-rest/)
+[![PyPI license](https://img.shields.io/pypi/l/django-rest.svg)](https://pypi.python.org/pypi/django-rest/)
+[![PyPI status](https://img.shields.io/pypi/status/django-rest.svg)](https://pypi.python.org/pypi/django-rest/)
+
+[![Build Status](https://travis-ci.org/alaouimehdi1995/django-rest.png?branch=master)](https://travis-ci.org/alaouimehdi1995/django-rest)
+[![codecov](https://codecov.io/gh/alaouimehdi1995/django-rest/branch/master/graph/badge.svg)](https://codecov.io/gh/alaouimehdi1995/django-rest)
+[![Known Vulnerabilities](https://snyk.io/test/github/alaouimehdi1995/django-rest/badge.svg)](https://snyk.io/test/github/alaouimehdi1995/django-rest)
+[![Maintainability](https://api.codeclimate.com/v1/badges/bcfd8d86afef77cf14ab/maintainability)](https://codeclimate.com/github/alaouimehdi1995/django-rest/maintainability)
+
 # Overview
 
 django-REST is a **tiny**, **lightweight**, **easy-to-use** and **incredibly fast** library to implement
