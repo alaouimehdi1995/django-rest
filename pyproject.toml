@@ -1,0 +1,18 @@
+[tool.black]
+check = true
+diff = true
+fast = true
+line-length = 88
+target-version = ['py27']
+include = '\.py(i|\.sample)?$'
+exclude = '''
+/(
+    \.git
+  | dist
+  | vendor
+  | venv3
+  | manage.py
+  | wsgi.py
+  | asgi.py
+)/
+'''
