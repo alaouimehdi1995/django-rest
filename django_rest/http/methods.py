@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from enum import Enum
-
 """
 For more details: https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
 """

@@ -4,7 +4,7 @@ import types
 
 import six
 
-from django_rest.serializers import Serializer
+from django_rest.serializers.serializers import Serializer
 from django_rest.serializers.base import Field
 from django_rest.serializers.exceptions import SerializationError
 

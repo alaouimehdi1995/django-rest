@@ -1,8 +1,12 @@
-FROM python:2-alpine
+FROM python:3.5-alpine
 
 WORKDIR /usr/src/app
 
-COPY ./tests/requirements/requirements.txt .
+RUN pip install pip-tools
+
+COPY ./tests/requirements/requirements.in .
+
+RUN pip-compile --output-file=requirements.txt requirements.in
 
 RUN pip install -r requirements.txt
 
