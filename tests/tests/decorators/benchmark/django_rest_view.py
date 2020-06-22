@@ -41,7 +41,7 @@ class DjangoRESTSimpleDeserializer(Deserializer):
 class DjangoRESTComplexDeserializer(Deserializer):
     foo = deserializers_fields.CharField()
     bar = deserializers_fields.IntegerField()
-    sub = DjangoRESTSimpleDeserializer()
+    #sub = DjangoRESTSimpleDeserializer()
 
 
 @api_view(deserializer_class=DjangoRESTComplexDeserializer)
