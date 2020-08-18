@@ -19,7 +19,6 @@ COPY django_rest ./django_rest
 COPY pytest.ini .
 COPY tests/tests tests
 COPY tests/benchmarks ./benchmarks
-RUN mkdir .report
 
 #ENTRYPOINT pytest tests --cov=django_rest --cov-report="html:/usr/src/app/.report/" --show-capture=no -s
 # To run benchmark, uncomment one of the following lines:
