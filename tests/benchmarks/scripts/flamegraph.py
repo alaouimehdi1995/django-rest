@@ -34,7 +34,7 @@ if __name__ == "__main__":
         f.write(sampler.output_stats())
 
     # Django-REST Framework
-    sampler.start()
+    sampler.restart()
     for i in range(REPETITIONS):
         django_rest_response = drf_view(request).render()
     with open(DRF_FLAMEGRAPH_OUTPUT_PATH, "w") as f:
