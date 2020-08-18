@@ -1,5 +1,6 @@
 # The objects that will be serialized
 
+
 payload = {
     "foo": "bar",
     "bar": 5,

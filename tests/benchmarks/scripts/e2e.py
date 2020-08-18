@@ -9,11 +9,9 @@ from django.test.client import RequestFactory
 from ..common import payload
 from ..drf_view import drf_view
 from ..django_rest_view import django_rest_view
-from ..flamegraph_sampler import Sampler
 
 _OUTPUT_CSV_PATH = "/usr/src/app/.report/e2e_benchmark.csv"
 
-sampler = Sampler(interval=0.0001)
 
 # The Request object
 
@@ -39,8 +37,8 @@ def get_functions_timings(sample_length):
     # Comparing results
     django_rest_result = json.loads(django_rest_response)
     drf_result = json.loads(drf_response)
-    #assert django_rest_response.status_code == 200
-    #assert drf_response.status_code == 200
+    # assert django_rest_response.status_code == 200
+    # assert drf_response.status_code == 200
     assert django_rest_result == drf_result
 
     return django_rest_timing, drf_timing
@@ -88,11 +86,3 @@ def export_data_into_csv(csv_filepath, data_matrix):
 if __name__ == "__main__":
     django.setup()
     run_benchmark()
-    """
-    django_rest_response = django_rest_view(request)
-    sampler.start()
-    for i in range(10000):
-        django_rest_response = drf_view(request).render()
-    with open('/usr/src/app/.report/flamegraph_output', 'w') as f:
-        f.write(sampler.output_stats())
-    """

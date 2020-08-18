@@ -1,5 +1,7 @@
 FROM python:3.5-alpine
 
+RUN apk update && apk add g++
+
 WORKDIR /usr/src/app
 
 RUN pip install pip-tools
@@ -17,6 +19,7 @@ COPY django_rest ./django_rest
 COPY pytest.ini .
 COPY tests/tests tests
 COPY tests/benchmarks ./benchmarks
+RUN mkdir .report
 
 #ENTRYPOINT pytest tests --cov=django_rest --cov-report="html:/usr/src/app/.report/" --show-capture=no -s
 # To run benchmark, uncomment one of the following lines:

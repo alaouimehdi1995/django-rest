@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import json
+import ujson
 from functools import wraps
 
 from django_rest.response import JsonResponse
@@ -80,7 +80,7 @@ def extract_request_payload(request, allow_form_data=False):
     if method not in SUPPORTING_PAYLOAD_METHODS:
         return None
 
-    return json.loads(request.body.decode())
+    return ujson.loads(request.body.decode())
 
 
 def build_function_wrapper(
