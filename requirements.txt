@@ -5,7 +5,7 @@
 #    pip-compile --output-file=requirements.txt requirements.in
 #
 asgiref==3.2.10           # via django
-django==3.0.7             # via -r requirements.in
+django==3.0.14             # via -r requirements.in
 pytz==2020.1              # via django
 six==1.15.0               # via -r requirements.in
 sqlparse==0.3.1           # via django
