@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as f:
 
 setup(
     name="django-rest",
-    version="0.8.6",
+    version="0.8.7",
     url="https://github.com/alaouimehdi1995/django-rest/",
     license="MIT",
     description="Tiny, lightweight, blazing fast REST library for django",
