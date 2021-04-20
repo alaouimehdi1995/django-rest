@@ -71,7 +71,7 @@ class SerializerMeta(type):
 
 
 class Serializer(six.with_metaclass(SerializerMeta, SerializerBase)):
-    """ The Serializer class is used as a base for custom serializers.
+    """The Serializer class is used as a base for custom serializers.
 
     A Serializer class is also a subclass of Field class, which allows nesting
     Serializers. A new serializer is defined by subclassing the `Serializer` class,
@@ -134,7 +134,7 @@ class Serializer(six.with_metaclass(SerializerMeta, SerializerBase)):
     @property
     def data(self):
         # type:() -> Dict[str, Any]
-        """ Get the serialized data from the Serializer instance. The data is cached
+        """Get the serialized data from the Serializer instance. The data is cached
         for further accesses.
         """
         # Cache the data for next time `.data` is called.
@@ -144,7 +144,7 @@ class Serializer(six.with_metaclass(SerializerMeta, SerializerBase)):
 
 
 class DictSerializer(Serializer):
-    """ DictSerializer serializes python `dicts` instead of objects.
+    """DictSerializer serializes python `dicts` instead of objects.
 
     `DictSerializer` uses `operator.itemgetter` to fetch data from the object
     to serialize, while `Serializer` class uses `operator.attrgetter`.

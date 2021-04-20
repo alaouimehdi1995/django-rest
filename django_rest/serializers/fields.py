@@ -74,7 +74,7 @@ def _is_valid_field_instance(field_instance):
 
 def ListField(field_instance):
     # type:(Field) -> Field
-    """ Allows to apply the Field.to_value() method on an iterable of values,
+    """Allows to apply the Field.to_value() method on an iterable of values,
     instead of a single value. The same purpose could be achieved with `MethodField()`,
     but it'll be just too annoying.
     Example:
@@ -190,7 +190,7 @@ class ConstantField(Field):
 
 
 class MethodField(Field):
-    """ A Field class that calls a method on the `Serializer` class.
+    """A Field class that calls a method on the `Serializer` class.
 
     This is useful if a Field needs to serialize a value that may come from multiple
     attributes on the same object. For example:

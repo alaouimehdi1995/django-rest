@@ -6,7 +6,7 @@ from django_rest.http.methods import SAFE_METHODS
 
 
 class MetaOperand(type):
-    """ Metaclass that allows its instances (permission classes) to use logical
+    """Metaclass that allows its instances (permission classes) to use logical
     using logical operators (AND, OR, ..) with the follwing syntax:
 
         FinalPermClass = (Perm1 | Perm2) & ~Perm3
@@ -43,7 +43,7 @@ class MetaOperand(type):
 
 
 class BinaryOperator(object):
-    """ Class that describes how to build a permission class as a result of a
+    """Class that describes how to build a permission class as a result of a
     Binary operators only. The current class is intended to be inherited by operators
     like: `AND`, `OR`, `XOR`, etc.
 
@@ -108,7 +108,7 @@ class BinaryOperator(object):
 
 
 class UnaryOperator(object):
-    """  Class that describes how to build a permission class as a result of a
+    """Class that describes how to build a permission class as a result of a
     Unary operators only. The current class is intended to be inherited by operators
     like: `NOT` and Identity operators.
 
@@ -168,7 +168,7 @@ class UnaryOperator(object):
 
 
 class AND(six.with_metaclass(MetaOperand, BinaryOperator)):
-    """ AND Logical operator class.
+    """AND Logical operator class.
 
     Example of use:
 
@@ -186,7 +186,7 @@ class AND(six.with_metaclass(MetaOperand, BinaryOperator)):
 
 
 class OR(six.with_metaclass(MetaOperand, BinaryOperator)):
-    """ OR Logical operator class.
+    """OR Logical operator class.
 
     Example of use:
 
@@ -204,7 +204,7 @@ class OR(six.with_metaclass(MetaOperand, BinaryOperator)):
 
 
 class XOR(six.with_metaclass(MetaOperand, BinaryOperator)):
-    """ XOR (eXclusive OR) Logical operator class.
+    """XOR (eXclusive OR) Logical operator class.
 
     Example of use:
 
@@ -222,7 +222,7 @@ class XOR(six.with_metaclass(MetaOperand, BinaryOperator)):
 
 
 class NOT(six.with_metaclass(MetaOperand, UnaryOperator)):
-    """ NOT Logical operator class.
+    """NOT Logical operator class.
 
     Example of use:
 

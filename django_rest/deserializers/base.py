@@ -121,7 +121,7 @@ class Deserializer(six.with_metaclass(DeclarativeFieldsMetaclass, BaseDeserializ
 
 
 class AllPassDeserializer(Deserializer):
-    """ Deserializer that accepts any given data. the clean always returns
+    """Deserializer that accepts any given data. the clean always returns
     the data received as input.
     """
 
