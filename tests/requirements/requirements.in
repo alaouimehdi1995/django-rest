@@ -10,7 +10,7 @@ django==2.*; python_version >= '3' and python_version < '3.6'
 django==3.*; python_version >= '3.6'
 enum34; python_version < '3'
 flake8
-mock; python_version < '3'
+mock
 pudb
 pytest
 pytest-cov

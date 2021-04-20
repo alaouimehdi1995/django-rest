@@ -4,7 +4,7 @@ import types
 
 
 class Field(object):
-    """ The Field class is used to define what attributes will be serialized.
+    """The Field class is used to define what attributes will be serialized.
 
     It maps a property or function on an object to a value in the serialized result.
     Subclass this to make custom fields. For most simple cases, overriding
@@ -37,7 +37,7 @@ class Field(object):
 
     def to_value(self, value):
         # type:(Any) -> Any
-        """ Transforms the serialized value. It could be used for cleaning
+        """Transforms the serialized value. It could be used for cleaning
         and validating the value serialized by the current field. For example,
         to implement an `int` field, the Field.to_value() method will looks like:
 
@@ -60,7 +60,7 @@ class Field(object):
 
     def as_getter(self, serializer_field_name, serializer_cls):
         # type:(str, type) -> Optional[Callable]
-        """ Returns a function that fetches an attribute from an object.
+        """Returns a function that fetches an attribute from an object.
 
         If `None` is returned, the default getter defined in `Serializer.default_getter`
         will be used instead.
