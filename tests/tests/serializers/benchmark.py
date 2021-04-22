@@ -60,7 +60,7 @@ class ComplexObject(object):
         ]
 
 
-def runtest_function(test_set_length):
+def benchmark_function(test_set_length):
     test_set = [ComplexObject() for i in range(test_set_length)]
 
     # django_rest
@@ -81,24 +81,24 @@ def runtest_function(test_set_length):
 
 def test_10_elements():
     i = 10
-    runtest_function(test_set_length=i)
+    benchmark_function(test_set_length=i)
 
 
 def test_100_elements():
     i = 100
-    runtest_function(test_set_length=i)
+    benchmark_function(test_set_length=i)
 
 
 def test_1000_elements():
     i = 1000
-    runtest_function(test_set_length=i)
+    benchmark_function(test_set_length=i)
 
 
 def test_10000_elements():
     i = 10000
-    runtest_function(test_set_length=i)
+    benchmark_function(test_set_length=i)
 
 
 def test_50000_elements():
     i = 50000
-    runtest_function(test_set_length=i)
+    benchmark_function(test_set_length=i)

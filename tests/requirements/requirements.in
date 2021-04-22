@@ -8,6 +8,7 @@ coverage
 django==1.*; python_version < '3'
 django==2.*; python_version >= '3' and python_version < '3.6'
 django==3.*; python_version >= '3.6'
+djangorestframework
 enum34; python_version < '3'
 flake8
 mock
@@ -15,3 +16,5 @@ pudb
 pytest
 pytest-cov
 pytest-django
+serpy
+ujson
